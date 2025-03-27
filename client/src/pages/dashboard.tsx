@@ -82,23 +82,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-[#1E1E1E] text-white">
       {/* Header/Navbar */}
-      <header className="bg-white border-b border-neutral-200 py-3 px-4 flex items-center justify-between">
+      <header className="bg-[#1E1E1E] border-b border-gray-800 py-3 px-4 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="text-secondary-500 mr-2">
+          <div className="text-gray-400 mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
               <line x1="12" y1="17" x2="12.01" y2="17"></line>
             </svg>
           </div>
-          <h1 className="text-xl font-semibold">RAG Explorer</h1>
+          <h1 className="text-xl font-semibold text-white">RAG Explorer</h1>
         </div>
         
         <div className="flex items-center space-x-4">
           <button 
-            className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md flex items-center"
+            className="bg-[#303030] hover:bg-[#404040] text-white px-4 py-2 rounded-md flex items-center"
             onClick={() => setUploadModalOpen(true)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 mr-2">
@@ -110,12 +110,12 @@ export default function Dashboard() {
           </button>
           
           <div className="flex items-center">
-            <span className="mr-2 text-neutral-500 text-sm">Current Book:</span>
+            <span className="mr-2 text-gray-300 text-sm">Current Book:</span>
             {isLoading ? (
-              <div className="animate-pulse h-10 w-48 bg-gray-200 rounded-md"></div>
+              <div className="animate-pulse h-10 w-48 bg-gray-700 rounded-md"></div>
             ) : (
               <select 
-                className="border border-neutral-300 rounded-md px-3 py-2 bg-white text-sm"
+                className="border border-gray-600 rounded-md px-3 py-2 bg-[#303030] text-white text-sm"
                 value={selectedBook?.id || ""}
                 onChange={handleBookChange}
                 disabled={!books || books.length === 0}
@@ -140,7 +140,7 @@ export default function Dashboard() {
         {/* Left panel: RAG Pipeline Inspector */}
         <div 
           id="left-panel" 
-          className="bg-white border-r border-neutral-200 flex flex-col"
+          className="bg-[#252525] border-r border-gray-800 flex flex-col"
           style={{ width: `${leftPanelWidth}px` }}
         >
           <RagPipelineInspector />
@@ -150,14 +150,14 @@ export default function Dashboard() {
           className={`resizer ${isLeftResizing ? 'active' : ''}`} 
           onMouseDown={handleLeftResizeStart}
           style={{
-            background: isLeftResizing ? '#3182CE' : '#E2E8F0',
+            background: isLeftResizing ? '#555' : '#333',
             width: '5px',
             cursor: 'col-resize',
           }}
         ></div>
         
         {/* Main panel: Chat Interface */}
-        <div id="main-panel" className="flex-1 flex flex-col bg-neutral-50">
+        <div id="main-panel" className="flex-1 flex flex-col bg-[#1E1E1E]">
           <ChatInterface />
         </div>
         
@@ -165,7 +165,7 @@ export default function Dashboard() {
           className={`resizer ${isRightResizing ? 'active' : ''}`} 
           onMouseDown={handleRightResizeStart}
           style={{
-            background: isRightResizing ? '#3182CE' : '#E2E8F0',
+            background: isRightResizing ? '#555' : '#333',
             width: '5px',
             cursor: 'col-resize',
           }}
@@ -174,7 +174,7 @@ export default function Dashboard() {
         {/* Right panel: Knowledge Graph Builder */}
         <div 
           id="right-panel" 
-          className="bg-white border-l border-neutral-200 flex flex-col"
+          className="bg-[#252525] border-l border-gray-800 flex flex-col"
           style={{ width: `${rightPanelWidth}px` }}
         >
           <KnowledgeGraphBuilder />

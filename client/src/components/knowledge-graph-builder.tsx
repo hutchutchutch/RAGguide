@@ -20,17 +20,17 @@ interface NodeType {
 
 export default function KnowledgeGraphBuilder() {
   const { selectedBook } = useBookContext();
-  const { nodes, edges, isLoading } = useKnowledgeGraph();
+  const { nodes, edges = [], isLoading } = useKnowledgeGraph();
   const { currentChunk } = useRagPipeline();
   const { toast } = useToast();
   const [showNodeCreator, setShowNodeCreator] = useState(false);
   const [showEdgeCreator, setShowEdgeCreator] = useState(false);
 
   const nodeTypes: NodeType[] = [
-    { type: 'person', color: 'bg-primary-100', textColor: 'text-primary-700' },
-    { type: 'place', color: 'bg-secondary-100', textColor: 'text-secondary-700' },
-    { type: 'object', color: 'bg-green-100', textColor: 'text-green-700' },
-    { type: 'concept', color: 'bg-orange-100', textColor: 'text-orange-700' },
+    { type: 'person', color: 'bg-gray-700', textColor: 'text-gray-200' },
+    { type: 'place', color: 'bg-gray-700', textColor: 'text-gray-200' },
+    { type: 'object', color: 'bg-gray-700', textColor: 'text-gray-200' },
+    { type: 'concept', color: 'bg-gray-700', textColor: 'text-gray-200' },
   ];
 
   const handleSuggestRelatedChunks = () => {
@@ -42,19 +42,19 @@ export default function KnowledgeGraphBuilder() {
 
   return (
     <>
-      <div className="p-4 border-b border-neutral-200">
-        <h2 className="text-lg font-semibold mb-3">Knowledge Graph Builder</h2>
+      <div className="p-4 border-b border-gray-700">
+        <h2 className="text-lg font-semibold mb-3 text-white">Knowledge Graph Builder</h2>
         
         {/* Graph Visualization */}
-        <div id="graph-container" className="bg-neutral-50 border border-neutral-200 rounded-md p-3 mb-4 min-h-[250px]">
+        <div id="graph-container" className="bg-[#252525] border border-gray-700 rounded-md p-3 mb-4 min-h-[250px]">
           {isLoading ? (
             <div className="flex items-center justify-center h-[250px]">
-              <div className="animate-spin h-8 w-8 border-4 border-primary-500 border-t-transparent rounded-full"></div>
+              <div className="animate-spin h-8 w-8 border-4 border-gray-500 border-t-transparent rounded-full"></div>
             </div>
           ) : nodes && nodes.length > 0 ? (
-            <GraphVisualization nodes={nodes} edges={edges} />
+            <GraphVisualization nodes={nodes} edges={edges || []} />
           ) : (
-            <div className="flex flex-col items-center justify-center h-[250px] text-neutral-500">
+            <div className="flex flex-col items-center justify-center h-[250px] text-gray-400">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -64,14 +64,14 @@ export default function KnowledgeGraphBuilder() {
               <p className="text-xs mt-1">Create nodes and edges to build your graph</p>
             </div>
           )}
-          <div className="text-center text-sm text-neutral-500 mt-2">
-            {nodes ? `${nodes.length} nodes, ${edges.length} relationships` : "0 nodes, 0 relationships"}
+          <div className="text-center text-sm text-gray-400 mt-2">
+            {nodes ? `${nodes.length} nodes, ${edges ? edges.length : 0} relationships` : "0 nodes, 0 relationships"}
           </div>
         </div>
         
         <div className="flex space-x-2 mb-4">
           <Button 
-            className="flex-1 bg-secondary-500 hover:bg-secondary-600 text-white"
+            className="flex-1 bg-[#303030] hover:bg-[#404040] text-white"
             onClick={() => setShowNodeCreator(true)}
             disabled={!selectedBook}
           >
@@ -84,7 +84,7 @@ export default function KnowledgeGraphBuilder() {
           </Button>
           <Button 
             variant="outline"
-            className="flex-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
+            className="flex-1 border-gray-600 hover:bg-[#303030] text-gray-300"
             onClick={() => setShowEdgeCreator(true)}
             disabled={!nodes || nodes.length < 2}
           >
@@ -99,7 +99,7 @@ export default function KnowledgeGraphBuilder() {
         
         <Button 
           variant="outline"
-          className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 mb-2"
+          className="w-full border-gray-600 hover:bg-[#303030] text-gray-300 mb-2"
           onClick={handleSuggestRelatedChunks}
           disabled={!currentChunk}
         >
@@ -110,7 +110,7 @@ export default function KnowledgeGraphBuilder() {
         </Button>
         
         <div className="flex items-center">
-          <span className="text-sm text-neutral-500 mr-2">Node Types:</span>
+          <span className="text-sm text-gray-400 mr-2">Node Types:</span>
           <div className="flex flex-wrap gap-1 text-xs">
             {nodeTypes.map((nodeType) => (
               <Badge key={nodeType.type} variant="outline" className={`${nodeType.color} ${nodeType.textColor}`}>

@@ -63,7 +63,8 @@ export default function ChatInterface() {
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       toast({
         title: "Error sending message",
         description: error.message || "Failed to process your message",
@@ -77,24 +78,24 @@ export default function ChatInterface() {
       <div className="flex-1 overflow-auto p-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h2 className="text-xl font-semibold mb-3">
+            <div className="bg-[#303030] rounded-lg shadow-md p-4 mb-6">
+              <h2 className="text-xl font-semibold mb-3 text-white">
                 {selectedBook 
                   ? `Chat with "${selectedBook.title}"` 
                   : "Upload or select a book to begin"}
               </h2>
-              <p className="text-neutral-600">
+              <p className="text-gray-300">
                 Ask questions about the book content. Toggle between standard RAG and GraphRAG to compare results.
               </p>
             </div>
             
             {/* Toggle between RAG views */}
-            <div className="flex border border-neutral-200 rounded-md overflow-hidden bg-white mb-8">
+            <div className="flex border border-gray-700 rounded-md overflow-hidden bg-[#252525] mb-8">
               <button
                 className={`flex-1 py-3 ${
                   viewMode === 'standard' 
-                    ? 'bg-secondary-500 text-white font-medium' 
-                    : 'bg-white text-neutral-600'
+                    ? 'bg-gray-700 text-white font-medium' 
+                    : 'bg-[#252525] text-gray-300'
                 }`}
                 onClick={() => setViewMode('standard')}
               >
@@ -109,8 +110,8 @@ export default function ChatInterface() {
               <button
                 className={`flex-1 py-3 ${
                   viewMode === 'graph' 
-                    ? 'bg-secondary-500 text-white font-medium' 
-                    : 'bg-white text-neutral-600'
+                    ? 'bg-gray-700 text-white font-medium' 
+                    : 'bg-[#252525] text-gray-300'
                 }`}
                 onClick={() => setViewMode('graph')}
               >
@@ -122,33 +123,35 @@ export default function ChatInterface() {
                 GraphRAG
               </button>
             </div>
-            
-            {/* Message thread */}
-            {messages.length === 0 ? (
-              <div className="text-center p-8 bg-white rounded-lg shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-neutral-300 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                <h3 className="text-lg font-medium text-neutral-700 mb-2">No messages yet</h3>
-                <p className="text-neutral-500">
-                  Ask a question about the book to start chatting
-                </p>
-              </div>
-            ) : (
-              messages.map((message, index) => (
+          </div>
+          
+          {/* Messages list */}
+          {messages.length === 0 ? (
+            <div className="text-center p-8 bg-[#252525] rounded-lg shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-600 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <h3 className="text-lg font-medium text-gray-300 mb-2">No messages yet</h3>
+              <p className="text-gray-400">
+                Ask a question about the book to start chatting
+              </p>
+            </div>
+          ) : (
+            <div>
+              {messages.map((message, index) => (
                 <div key={message.id || index} className="mb-6">
                   {/* User message */}
                   {message.role === 'user' && (
-                    <div className="flex items-start mb-1">
-                      <div className="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center mr-3 mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <div className="flex items-start mb-4">
+                      <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center mr-3 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                           <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-sm text-neutral-600 mb-1">You</p>
-                        <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <p className="font-medium text-sm text-gray-300 mb-1">You</p>
+                        <div className="bg-[#303030] rounded-lg p-4 shadow-sm text-white">
                           <p>{message.content}</p>
                         </div>
                       </div>
@@ -158,8 +161,8 @@ export default function ChatInterface() {
                   {/* Assistant message */}
                   {message.role === 'assistant' && (
                     <div className="flex items-start mt-4">
-                      <div className="w-8 h-8 rounded-full bg-secondary-100 flex items-center justify-center mr-3 mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-secondary-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center mr-3 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 8V4H8"></path>
                           <rect width="16" height="12" x="4" y="8" rx="2"></rect>
                           <path d="M2 14h2"></path>
@@ -170,25 +173,21 @@ export default function ChatInterface() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center mb-1">
-                          <p className="font-medium text-sm text-neutral-600 mr-2">Assistant</p>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            message.type === 'standard' 
-                              ? 'bg-primary-100 text-primary-700' 
-                              : 'bg-secondary-100 text-secondary-700'
-                          }`}>
+                          <p className="font-medium text-sm text-gray-300 mr-2">Assistant</p>
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-700 text-gray-300">
                             {message.type === 'standard' ? 'Standard RAG' : 'GraphRAG'}
                           </span>
                         </div>
-                        <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <div className="bg-[#303030] rounded-lg p-4 shadow-sm text-white">
                           <p className="mb-3 whitespace-pre-wrap">{message.content}</p>
                           
                           {/* Source chunks used */}
                           {message.sources && message.sources.length > 0 && (
-                            <div className="mt-4 border-t border-neutral-200 pt-3">
-                              <p className="text-sm font-medium text-neutral-600 mb-2">Sources:</p>
+                            <div className="mt-4 border-t border-gray-600 pt-3">
+                              <p className="text-sm font-medium text-gray-300 mb-2">Sources:</p>
                               {message.sources.map((source, idx) => (
-                                <div key={idx} className="bg-neutral-50 p-3 rounded-md text-xs text-neutral-700 border border-neutral-200 mb-2 last:mb-0">
-                                  <p className="mb-1 font-medium text-neutral-500">
+                                <div key={idx} className="bg-[#252525] p-3 rounded-md text-xs text-gray-300 border border-gray-700 mb-2 last:mb-0">
+                                  <p className="mb-1 font-medium text-gray-400">
                                     Chunk #{idx + 1} ({Math.round(source.relevance * 100)}% relevance)
                                   </p>
                                   <p className="code-block whitespace-pre-wrap font-mono">
@@ -206,17 +205,17 @@ export default function ChatInterface() {
                     </div>
                   )}
                 </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              ))}
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
       </div>
       
-      {/* Input area */}
-      <div className="border-t border-neutral-200 bg-white p-4">
+      {/* Message input */}
+      <div className="border-t border-gray-800 bg-[#252525] p-4">
         <div className="max-w-4xl mx-auto">
-          <form className="flex items-end" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="flex items-end">
             <div className="flex-1 relative">
               <Textarea
                 ref={textareaRef}
@@ -224,14 +223,13 @@ export default function ChatInterface() {
                 onChange={(e) => setUserMessage(e.target.value)}
                 placeholder="Ask a question about the book..."
                 rows={2}
-                className="w-full border border-neutral-300 rounded-lg py-3 px-4 pr-10 resize-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 outline-none"
+                className="w-full resize-none p-3 border border-gray-600 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-gray-500 bg-[#303030] text-white"
               />
               {userMessage && (
                 <button 
                   type="button" 
-                  className="absolute right-3 bottom-3 text-neutral-400 hover:text-neutral-600"
+                  className="absolute right-3 bottom-3 text-gray-400 hover:text-gray-200"
                   onClick={() => setUserMessage("")}
-                  title="Clear input"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 6 6 18"></path>
@@ -241,9 +239,9 @@ export default function ChatInterface() {
               )}
             </div>
             <Button 
-              type="submit" 
-              className="ml-3 bg-primary-500 hover:bg-primary-600 text-white"
+              type="submit"
               disabled={isLoading || !userMessage.trim() || !selectedBook}
+              className="ml-3 bg-[#303030] hover:bg-[#404040] text-white"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m22 2-7 20-4-9-9-4Z"></path>
@@ -257,7 +255,7 @@ export default function ChatInterface() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-sm text-neutral-500 hover:text-neutral-700"
+              className="text-sm text-gray-400 hover:text-gray-200"
               onClick={() => {
                 toast({
                   title: "Advanced Options",

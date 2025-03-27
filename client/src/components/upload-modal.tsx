@@ -107,9 +107,9 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-[#252525] border border-gray-700 text-white">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Upload New Book</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-white">Upload New Book</DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -119,11 +119,15 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Book Title</FormLabel>
+                  <FormLabel className="text-gray-300">Book Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter book title..." {...field} />
+                    <Input 
+                      placeholder="Enter book title..." 
+                      className="bg-[#303030] border-gray-600 text-white placeholder:text-gray-500 focus-visible:ring-gray-500"
+                      {...field} 
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -133,29 +137,29 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               name="file"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>File Upload (PDF or TXT)</FormLabel>
+                  <FormLabel className="text-gray-300">File Upload (PDF or TXT)</FormLabel>
                   <FormControl>
                     <div 
                       className={`border-2 border-dashed rounded-md p-4 text-center ${
-                        isDragging ? "border-primary-500 bg-primary-50" : "border-neutral-300"
+                        isDragging ? "border-gray-400 bg-[#303030]" : "border-gray-600"
                       }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
                     >
                       <div className="mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-10 w-10 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                           <polyline points="17 8 12 3 7 8"></polyline>
                           <line x1="12" y1="3" x2="12" y2="15"></line>
                         </svg>
                       </div>
-                      <p className="text-sm text-neutral-600 mb-2">
+                      <p className="text-sm text-gray-300 mb-2">
                         {value ? value.name : "Drag & drop your PDF or TXT file here or"}
                       </p>
                       <Button
                         type="button"
-                        className="bg-primary-500 hover:bg-primary-600 text-white"
+                        className="bg-[#303030] hover:bg-[#404040] text-white"
                         onClick={() => {
                           const input = document.createElement("input");
                           input.type = "file";
@@ -171,10 +175,10 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                       >
                         Browse Files
                       </Button>
-                      <p className="text-xs text-neutral-500 mt-2">Maximum file size: 20MB</p>
+                      <p className="text-xs text-gray-500 mt-2">Maximum file size: 20MB</p>
                     </div>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -183,12 +187,14 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               <Button
                 type="button"
                 variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-[#303030] hover:text-white"
                 onClick={onClose}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
+                className="bg-[#303030] hover:bg-[#404040] text-white"
                 disabled={isSubmitting || !form.formState.isValid}
               >
                 {isSubmitting ? "Uploading..." : "Upload & Process"}
