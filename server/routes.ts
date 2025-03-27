@@ -5,6 +5,7 @@ import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs";
+import openaiLib from "./lib/openai";
 import {
   insertBookSchema,
   insertEmbeddingSettingsSchema,
@@ -33,10 +34,10 @@ const upload = multer({
     },
   }),
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
+    if (file.mimetype === "application/pdf" || file.mimetype === "text/plain") {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF files are allowed"));
+      cb(new Error("Only PDF and TXT files are allowed"));
     }
   },
   limits: {
@@ -300,6 +301,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch knowledge graph", error: error.message });
+    }
+  });
+
+  // OpenAI API routes
+  app.post("/api/openai/embeddings", async (req, res) => {
+    try {
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ 
+          message: "OpenAI API key is not configured. Please add your API key in the environment variables." 
+        });
+      }
+
+      const { input, model } = req.body;
+      
+      if (!input) {
+        return res.status(400).json({ message: "Input text is required" });
+      }
+      
+      const embedding = await openaiLib.getEmbedding(input, model);
+      res.json({ embedding });
+    } catch (error) {
+      console.error("Error generating embeddings:", error);
+      res.status(500).json({ 
+        message: "Failed to generate embeddings", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+
+  app.post("/api/openai/chat", async (req, res) => {
+    try {
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ 
+          message: "OpenAI API key is not configured. Please add your API key in the environment variables." 
+        });
+      }
+
+      const { messages, model } = req.body;
+      
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ message: "Valid messages array is required" });
+      }
+      
+      const content = await openaiLib.generateCompletion(messages, model);
+      res.json({ content });
+    } catch (error) {
+      console.error("Error generating chat completion:", error);
+      res.status(500).json({ 
+        message: "Failed to generate chat completion", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
     }
   });
 

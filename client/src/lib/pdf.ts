@@ -4,10 +4,23 @@ import { getDocument, PDFDocumentProxy, GlobalWorkerOptions } from 'pdfjs-dist';
 GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.320/build/pdf.worker.min.js`;
 
 /**
- * Extract text content from a PDF file
+ * Extract text content from a PDF or TXT file
  */
 export async function extractTextFromPDF(file: File): Promise<string[]> {
   try {
+    // For TXT files, we can just read the text directly
+    if (file.type === "text/plain") {
+      const text = await file.text();
+      
+      // Split the text into pages (using double newlines as page separators)
+      // Or just return as a single page if there are no clear page separators
+      const pages = text.split(/\n{3,}/)
+        .filter(page => page.trim().length > 0);
+        
+      return pages.length ? pages : [text];
+    }
+    
+    // For PDF files, proceed with PDF parsing
     // Convert file to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     
@@ -30,9 +43,10 @@ export async function extractTextFromPDF(file: File): Promise<string[]> {
     }
     
     return pages;
-  } catch (error) {
-    console.error('Error extracting text from PDF:', error);
-    throw new Error(`Failed to extract text from PDF: ${error.message}`);
+  } catch (err) {
+    const error = err as Error;
+    console.error('Error extracting text from file:', error);
+    throw new Error(`Failed to extract text from file: ${error.message}`);
   }
 }
 

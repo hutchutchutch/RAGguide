@@ -20,8 +20,11 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const uploadSchema = insertBookSchema.extend({
-  file: z.instanceof(File, { message: "Please select a PDF file" })
-    .refine(file => file.type === "application/pdf", "File must be a PDF")
+  file: z.instanceof(File, { message: "Please select a PDF or TXT file" })
+    .refine(
+      file => file.type === "application/pdf" || file.type === "text/plain", 
+      "File must be a PDF or TXT"
+    )
     .refine(file => file.size <= 20 * 1024 * 1024, "File size must not exceed 20MB"),
 });
 
@@ -65,7 +68,8 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
       // Close modal and reset form
       onClose();
       form.reset();
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error;
       toast({
         title: "Upload failed",
         description: error.message || "Failed to upload book. Please try again.",
@@ -89,12 +93,12 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     
     if (e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      if (file.type === "application/pdf") {
+      if (file.type === "application/pdf" || file.type === "text/plain") {
         form.setValue("file", file);
       } else {
         toast({
           title: "Invalid file type",
-          description: "Please upload a PDF file.",
+          description: "Please upload a PDF or TXT file.",
           variant: "destructive",
         });
       }
@@ -129,7 +133,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               name="file"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
-                  <FormLabel>PDF File</FormLabel>
+                  <FormLabel>File Upload (PDF or TXT)</FormLabel>
                   <FormControl>
                     <div 
                       className={`border-2 border-dashed rounded-md p-4 text-center ${
@@ -147,7 +151,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         </svg>
                       </div>
                       <p className="text-sm text-neutral-600 mb-2">
-                        {value ? value.name : "Drag & drop your PDF here or"}
+                        {value ? value.name : "Drag & drop your PDF or TXT file here or"}
                       </p>
                       <Button
                         type="button"
@@ -155,7 +159,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
                         onClick={() => {
                           const input = document.createElement("input");
                           input.type = "file";
-                          input.accept = "application/pdf";
+                          input.accept = "application/pdf,text/plain";
                           input.onchange = (e) => {
                             const file = (e.target as HTMLInputElement).files?.[0];
                             if (file) {
