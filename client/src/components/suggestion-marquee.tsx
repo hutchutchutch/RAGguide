@@ -26,13 +26,17 @@ export default function SuggestionMarquee({ onSuggestionClick }: SuggestionMarqu
   ];
 
   return (
-    <div className="mb-6 overflow-hidden">
-      <div className="relative max-w-4xl mx-auto py-2 bg-[#1A1A1A]">
+    <div className="mb-6 overflow-hidden rounded-lg border border-gray-700">
+      <div className="relative mx-auto py-1 bg-[#252525]">
+        <p className="text-xs text-gray-400 absolute left-2 top-1 z-20">
+          Try asking:
+        </p>
+        
         {/* Left fade effect */}
         <div 
           className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
           style={{
-            background: 'linear-gradient(to right, #1A1A1A 10%, rgba(26, 26, 26, 0.8) 50%, rgba(26, 26, 26, 0) 100%)',
+            background: 'linear-gradient(to right, #252525 0%, rgba(37, 37, 37, 0.9) 40%, rgba(37, 37, 37, 0) 100%)',
           }}
         ></div>
         
@@ -40,21 +44,21 @@ export default function SuggestionMarquee({ onSuggestionClick }: SuggestionMarqu
         <div 
           className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
           style={{
-            background: 'linear-gradient(to left, #1A1A1A 10%, rgba(26, 26, 26, 0.8) 50%, rgba(26, 26, 26, 0) 100%)',
+            background: 'linear-gradient(to left, #252525 0%, rgba(37, 37, 37, 0.9) 40%, rgba(37, 37, 37, 0) 100%)',
           }}
         ></div>
         
         <Marquee
           gradient={false}
-          speed={35}
+          speed={25}
           pauseOnHover={true}
-          className="py-3"
+          className="py-3 pl-16" // Added left padding to accommodate "Try asking:" text
         >
-          <div className="flex space-x-6 px-8">
+          <div className="flex space-x-4 px-4">
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
-                className="bg-[#303030] hover:bg-[#404040] text-gray-300 hover:text-white px-4 py-2 rounded-md text-sm transition-colors duration-200 whitespace-nowrap shadow-md animated-border"
+                className="bg-[#303030] hover:bg-[#404040] text-gray-300 hover:text-white px-4 py-2 rounded-md text-sm transition-colors duration-200 whitespace-nowrap shadow-md border border-gray-600"
                 onClick={() => onSuggestionClick(suggestion)}
               >
                 {suggestion}

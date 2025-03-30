@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import SuggestionMarquee from "./suggestion-marquee";
 
 interface Message {
   id: string;
@@ -60,6 +59,29 @@ export default function ChatInterface() {
       textareaRef.current.dispatchEvent(event);
     }
   }, [userMessage]);
+  
+  // Listen for suggestion events from the dashboard component
+  useEffect(() => {
+    const handleSuggestionEvent = (e: CustomEvent) => {
+      if (e.detail) {
+        setUserMessage(e.detail);
+        // Auto-resize with slight delay to ensure DOM update
+        setTimeout(() => {
+          if (textareaRef.current) {
+            const inputEvent = new Event('input', { bubbles: true });
+            textareaRef.current.dispatchEvent(inputEvent);
+            textareaRef.current.focus();
+          }
+        }, 50);
+      }
+    };
+    
+    document.addEventListener('useSuggestion', handleSuggestionEvent as EventListener);
+    
+    return () => {
+      document.removeEventListener('useSuggestion', handleSuggestionEvent as EventListener);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,9 +142,6 @@ export default function ChatInterface() {
                 Ask questions about the book content. Toggle between standard RAG and GraphRAG to compare results.
               </p>
             </div>
-            
-            {/* Suggestion Marquee */}
-            {selectedBook && <SuggestionMarquee onSuggestionClick={handleSuggestionClick} />}
             
             {/* Toggle between RAG views */}
             <div className="flex border border-gray-700 rounded-md overflow-hidden bg-[#252525] mb-8">

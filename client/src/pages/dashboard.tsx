@@ -4,6 +4,7 @@ import RagPipelineInspector from "@/components/rag-pipeline-inspector";
 import ChatInterface from "@/components/chat-interface";
 import KnowledgeGraphBuilder from "@/components/knowledge-graph-builder";
 import UploadModal from "@/components/upload-modal";
+import SuggestionMarquee from "@/components/suggestion-marquee";
 import { Book } from "@shared/schema";
 import { useBookContext } from "@/contexts/book-context";
 
@@ -188,6 +189,17 @@ export default function Dashboard() {
         
         {/* Main panel: Chat Interface */}
         <div id="main-panel" className="flex-1 flex flex-col bg-[#1E1E1E]">
+          {selectedBook && (
+            <div className="px-4 pt-4">
+              <div className="max-w-4xl mx-auto">
+                <SuggestionMarquee onSuggestionClick={(suggestion) => {
+                  // Create a custom event to pass the suggestion to ChatInterface
+                  const event = new CustomEvent('useSuggestion', { detail: suggestion });
+                  document.dispatchEvent(event);
+                }} />
+              </div>
+            </div>
+          )}
           <ChatInterface />
         </div>
         
