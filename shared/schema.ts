@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, timestamp, uuid, real, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, uuid, real, primaryKey, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { vector } from "../server/lib/pgvector";
 
 // Books table for storing uploaded PDFs
 export const books = pgTable("books", {
@@ -27,7 +28,9 @@ export const chunks = pgTable("chunks", {
   book_id: uuid("book_id").references(() => books.id).notNull(),
   chunk_index: integer("chunk_index").notNull(),
   text: text("text").notNull(),
-  embedding: text("embedding").notNull(), // Store as JSON string for in-memory use
+  // Store embeddings as both a text field (for JSON compatibility) and vector field (for similarity search)
+  embedding: text("embedding").notNull(), // Store as JSON string for compatibility
+  embedding_vector: vector("embedding_vector", { dimensions: 1536 }), // Store as vector for similarity search
   page_number: integer("page_number"),
   embedding_settings_id: uuid("embedding_settings_id").references(() => embeddingSettings.id).notNull(),
 });
@@ -87,7 +90,7 @@ export const nodeChunks = pgTable("node_chunks", {
 // Insert schemas
 export const insertBookSchema = createInsertSchema(books).omit({ id: true, uploaded_at: true });
 export const insertEmbeddingSettingsSchema = createInsertSchema(embeddingSettings).omit({ id: true, created_at: true });
-export const insertChunkSchema = createInsertSchema(chunks).omit({ id: true });
+export const insertChunkSchema = createInsertSchema(chunks).omit({ id: true, embedding_vector: true });
 export const insertChatSessionSchema = createInsertSchema(chatSessions).omit({ id: true, created_at: true });
 export const insertChatChunkSchema = createInsertSchema(chatChunks).omit({ id: true });
 export const insertLlmPromptSchema = createInsertSchema(llmPrompts).omit({ id: true });

@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { initializeDatabase } from "./lib/db";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,17 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize database
+  try {
+    await initializeDatabase();
+    log("Database initialized successfully", "db");
+  } catch (e) {
+    const error = e as Error;
+    log(`Error initializing database: ${error.message || 'Unknown error'}`, "db");
+    // Continue even if database initialization fails
+    // This allows using memory storage as fallback
+  }
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

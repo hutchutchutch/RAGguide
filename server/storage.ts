@@ -10,6 +10,7 @@ import {
   NodeChunk, InsertNodeChunk
 } from "@shared/schema";
 import { v4 as uuidv4 } from 'uuid';
+import { PgStorage } from './pg-storage';
 
 export interface IStorage {
   // Book operations
@@ -129,6 +130,8 @@ export class MemStorage implements IStorage {
     const newChunk: Chunk = {
       ...chunk,
       id,
+      embedding_vector: null,  // Set to null for in-memory storage
+      page_number: chunk.page_number || null
     };
     this.chunks.set(id, newChunk);
     return newChunk;
@@ -210,6 +213,7 @@ export class MemStorage implements IStorage {
     const newNode: Node = {
       ...node,
       id,
+      description: node.description || null
     };
     this.nodes.set(id, newNode);
     return newNode;
@@ -235,6 +239,7 @@ export class MemStorage implements IStorage {
     const newEdge: Edge = {
       ...edge,
       id,
+      explanation: edge.explanation || null
     };
     this.edges.set(id, newEdge);
     return newEdge;
@@ -258,4 +263,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Create a postgres storage instance to use in production
+const pgStorage = new PgStorage();
+
+// Use PostgreSQL storage in production, fall back to memory storage for development if needed
+export const storage: IStorage = process.env.DATABASE_URL ? pgStorage : new MemStorage();
