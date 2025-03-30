@@ -97,4 +97,9 @@
   ::-webkit-scrollbar-thumb:hover {
     background-color: #505050;
   }
+  
+  /* Marquee container styling */
+  .marquee-container {
+    background-color: #1A1A1A !important;
+  }
 }

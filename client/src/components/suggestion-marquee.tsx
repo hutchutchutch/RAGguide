@@ -26,26 +26,43 @@ export default function SuggestionMarquee({ onSuggestionClick }: SuggestionMarqu
   ];
 
   return (
-    <div className="bg-[#252525] border-b border-gray-700 py-2 mb-4 overflow-hidden">
-      <Marquee
-        gradient={true}
-        gradientColor="#252525"
-        gradientWidth={50}
-        speed={35}
-        pauseOnHover={true}
-      >
-        <div className="flex space-x-4 px-2">
-          {suggestions.map((suggestion, index) => (
-            <button
-              key={index}
-              className="bg-[#303030] hover:bg-[#404040] text-gray-300 hover:text-white px-3 py-1.5 rounded-md text-sm transition-colors duration-200 whitespace-nowrap animated-border"
-              onClick={() => onSuggestionClick(suggestion)}
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
-      </Marquee>
+    <div className="mb-6 overflow-hidden">
+      <div className="relative max-w-4xl mx-auto py-2 bg-[#1A1A1A]">
+        {/* Left fade effect */}
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to right, #1A1A1A 10%, rgba(26, 26, 26, 0.8) 50%, rgba(26, 26, 26, 0) 100%)',
+          }}
+        ></div>
+        
+        {/* Right fade effect */}
+        <div 
+          className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to left, #1A1A1A 10%, rgba(26, 26, 26, 0.8) 50%, rgba(26, 26, 26, 0) 100%)',
+          }}
+        ></div>
+        
+        <Marquee
+          gradient={false}
+          speed={35}
+          pauseOnHover={true}
+          className="py-3"
+        >
+          <div className="flex space-x-6 px-8">
+            {suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                className="bg-[#303030] hover:bg-[#404040] text-gray-300 hover:text-white px-4 py-2 rounded-md text-sm transition-colors duration-200 whitespace-nowrap shadow-md animated-border"
+                onClick={() => onSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </Marquee>
+      </div>
     </div>
   );
 }
