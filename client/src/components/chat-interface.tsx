@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import SuggestionMarquee from "./suggestion-marquee";
 
 interface Message {
   id: string;
@@ -73,6 +74,19 @@ export default function ChatInterface() {
     }
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setUserMessage(suggestion);
+    
+    // Set focus on the textarea
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+      
+      // Reset textarea height
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
   return (
     <>
       <div className="flex-1 overflow-auto p-4">
@@ -88,6 +102,9 @@ export default function ChatInterface() {
                 Ask questions about the book content. Toggle between standard RAG and GraphRAG to compare results.
               </p>
             </div>
+            
+            {/* Suggestion Marquee */}
+            {selectedBook && <SuggestionMarquee onSuggestionClick={handleSuggestionClick} />}
             
             {/* Toggle between RAG views */}
             <div className="flex border border-gray-700 rounded-md overflow-hidden bg-[#252525] mb-8">

@@ -15,6 +15,8 @@ export default function Dashboard() {
   const [rightPanelWidth, setRightPanelWidth] = useState(350);
   const [isLeftResizing, setIsLeftResizing] = useState(false);
   const [isRightResizing, setIsRightResizing] = useState(false);
+  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
+  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
 
   // Handle book selection
   const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -140,10 +142,37 @@ export default function Dashboard() {
         {/* Left panel: RAG Pipeline Inspector */}
         <div 
           id="left-panel" 
-          className="bg-[#252525] border-r border-gray-800 flex flex-col"
-          style={{ width: `${leftPanelWidth}px` }}
+          className="bg-[#252525] border-r border-gray-800 flex flex-col relative transition-all duration-300"
+          style={{ width: leftPanelCollapsed ? '40px' : `${leftPanelWidth}px` }}
         >
-          <RagPipelineInspector />
+          {leftPanelCollapsed ? (
+            <div className="p-3 flex flex-col items-center h-full">
+              <button 
+                onClick={() => setLeftPanelCollapsed(false)}
+                className="bg-[#303030] hover:bg-[#404040] rounded-full w-8 h-8 flex items-center justify-center text-gray-300 hover:text-white"
+                title="Expand Pipeline Inspector"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="absolute top-3 right-3 z-10">
+                <button 
+                  onClick={() => setLeftPanelCollapsed(true)}
+                  className="bg-[#303030] hover:bg-[#404040] rounded-full w-8 h-8 flex items-center justify-center text-gray-300 hover:text-white"
+                  title="Collapse Pipeline Inspector"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <RagPipelineInspector />
+            </>
+          )}
         </div>
         
         <div 
@@ -153,6 +182,7 @@ export default function Dashboard() {
             background: isLeftResizing ? '#555' : '#333',
             width: '5px',
             cursor: 'col-resize',
+            display: leftPanelCollapsed ? 'none' : 'block',
           }}
         ></div>
         
@@ -168,16 +198,44 @@ export default function Dashboard() {
             background: isRightResizing ? '#555' : '#333',
             width: '5px',
             cursor: 'col-resize',
+            display: rightPanelCollapsed ? 'none' : 'block',
           }}
         ></div>
         
         {/* Right panel: Knowledge Graph Builder */}
         <div 
           id="right-panel" 
-          className="bg-[#252525] border-l border-gray-800 flex flex-col"
-          style={{ width: `${rightPanelWidth}px` }}
+          className="bg-[#252525] border-l border-gray-800 flex flex-col relative transition-all duration-300"
+          style={{ width: rightPanelCollapsed ? '40px' : `${rightPanelWidth}px` }}
         >
-          <KnowledgeGraphBuilder />
+          {rightPanelCollapsed ? (
+            <div className="p-3 flex flex-col items-center h-full">
+              <button 
+                onClick={() => setRightPanelCollapsed(false)}
+                className="bg-[#303030] hover:bg-[#404040] rounded-full w-8 h-8 flex items-center justify-center text-gray-300 hover:text-white"
+                title="Expand Knowledge Graph Builder"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="absolute top-3 left-3 z-10">
+                <button 
+                  onClick={() => setRightPanelCollapsed(true)}
+                  className="bg-[#303030] hover:bg-[#404040] rounded-full w-8 h-8 flex items-center justify-center text-gray-300 hover:text-white"
+                  title="Collapse Knowledge Graph Builder"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <KnowledgeGraphBuilder />
+            </>
+          )}
         </div>
       </div>
 
