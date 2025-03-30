@@ -35,11 +35,29 @@ export default function ChatInterface() {
     }
   }, [messages]);
 
-  // Auto-resize textarea
+  // Auto-resize textarea function
+  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const textarea = e.target;
+    textarea.style.height = "auto";
+
+    const style = window.getComputedStyle(textarea);
+    const borderHeight = parseInt(style.borderTopWidth) + parseInt(style.borderBottomWidth);
+    const paddingHeight = parseInt(style.paddingTop) + parseInt(style.paddingBottom);
+    
+    const lineHeight = parseInt(style.lineHeight) || 20; // fallback line height
+    const maxRows = 5; // limit to 5 rows max
+    const maxHeight = maxRows * lineHeight + borderHeight + paddingHeight;
+
+    const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+    textarea.style.height = `${newHeight}px`;
+  };
+  
+  // Initial resize when message changes
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      // Trigger the resize effect by simulating an input event
+      const event = new Event('input', { bubbles: true });
+      textareaRef.current.dispatchEvent(event);
     }
   }, [userMessage]);
 
@@ -81,9 +99,9 @@ export default function ChatInterface() {
     if (textareaRef.current) {
       textareaRef.current.focus();
       
-      // Reset textarea height
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      // Simulate an input event to trigger the resize function
+      const event = new Event('input', { bubbles: true });
+      textareaRef.current.dispatchEvent(event);
     }
   };
 
@@ -237,10 +255,14 @@ export default function ChatInterface() {
               <Textarea
                 ref={textareaRef}
                 value={userMessage}
-                onChange={(e) => setUserMessage(e.target.value)}
+                onChange={(e) => {
+                  setUserMessage(e.target.value);
+                  handleTextareaInput(e);
+                }}
+                onInput={handleTextareaInput}
                 placeholder="Ask a question about the book..."
-                rows={2}
-                className="w-full resize-none p-3 border border-gray-600 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-gray-500 bg-[#303030] text-white"
+                rows={1}
+                className="w-full resize-none p-3 border border-gray-600 rounded-md focus:ring-1 focus:ring-gray-500 focus:border-gray-500 bg-[#303030] text-white min-h-[none]"
               />
               {userMessage && (
                 <button 
