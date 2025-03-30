@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useBooks } from "@/hooks/use-books";
-import RagPipelineInspector from "@/components/rag-pipeline-inspector";
+import VectorStoreCreator from "@/components/vector-store-creator";
 import ChatInterface from "@/components/chat-interface";
 import KnowledgeGraphBuilder from "@/components/knowledge-graph-builder";
 import UploadModal from "@/components/upload-modal";
@@ -12,7 +12,7 @@ export default function Dashboard() {
   const { books, isLoading } = useBooks();
   const { selectedBook, setSelectedBook } = useBookContext();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [leftPanelWidth, setLeftPanelWidth] = useState(350);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(400);
   const [rightPanelWidth, setRightPanelWidth] = useState(350);
   const [isLeftResizing, setIsLeftResizing] = useState(false);
   const [isRightResizing, setIsRightResizing] = useState(false);
@@ -41,10 +41,10 @@ export default function Dashboard() {
     const newWidth = e.clientX;
     
     // Set bounds
-    if (newWidth < 350) {
-      setLeftPanelWidth(350);
-    } else if (newWidth > 500) {
-      setLeftPanelWidth(500);
+    if (newWidth < 400) {
+      setLeftPanelWidth(400);
+    } else if (newWidth > 600) {
+      setLeftPanelWidth(600);
     } else {
       setLeftPanelWidth(newWidth);
     }
@@ -140,7 +140,7 @@ export default function Dashboard() {
       
       {/* Main content area with three-panel layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left panel: RAG Pipeline Inspector */}
+        {/* Left panel: Vector Store Creation */}
         <div 
           id="left-panel" 
           className="bg-[#252525] border-r border-gray-800 flex flex-col relative transition-all duration-300"
@@ -151,7 +151,7 @@ export default function Dashboard() {
               <button 
                 onClick={() => setLeftPanelCollapsed(false)}
                 className="bg-[#303030] hover:bg-[#404040] rounded-full w-8 h-8 flex items-center justify-center text-gray-300 hover:text-white"
-                title="Expand Pipeline Inspector"
+                title="Expand Vector Store Creation"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
                   <polyline points="9 18 15 12 9 6"></polyline>
@@ -164,14 +164,14 @@ export default function Dashboard() {
                 <button 
                   onClick={() => setLeftPanelCollapsed(true)}
                   className="bg-[#303030] hover:bg-[#404040] rounded-full w-8 h-8 flex items-center justify-center text-gray-300 hover:text-white"
-                  title="Collapse Pipeline Inspector"
+                  title="Collapse Vector Store Creation"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
                     <polyline points="9 18 15 12 9 6"></polyline>
                   </svg>
                 </button>
               </div>
-              <RagPipelineInspector />
+              <VectorStoreCreator />
             </>
           )}
         </div>

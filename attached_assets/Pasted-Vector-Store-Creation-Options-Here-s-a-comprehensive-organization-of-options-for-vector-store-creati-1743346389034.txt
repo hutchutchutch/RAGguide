@@ -1,0 +1,45 @@
+Vector Store Creation Options
+Here's a comprehensive organization of options for vector store creation, structured for a user interface with collapsible containers:
+Primary Options (Always Visible)
+
+Vector Database: [Pinecone, Weaviate, Qdrant, Chroma, Milvus, Supabase Vector]
+Embedding Model: [OpenAI, Cohere, Hugging Face models, Open source models]
+Document Type: [PDF, TXT, DOCX, CSV, Mixed]
+File Upload Area: Drag and drop or browse files
+
+Text Processing (5 options) ▶️
+
+Chunking Method: [Fixed size, Semantic, Sliding window, Recursive]
+Chunk Size: [256, 512, 1024, 2048] characters/tokens
+Chunk Overlap: [0%, 10%, 20%, 50%]
+Special Content Handling: [Keep tables, Extract tables as structured data, Remove tables]
+Document Preprocessing: [Remove headers/footers, Clean formatting artifacts, Keep raw text]
+
+Embedding Configuration (3 options) ▶️
+
+Model-specific Parameters: [Dimensions: 384, 768, 1536]
+Contextual Setting: [With document context, Without context]
+Batch Processing: [Batch size: 16, 32, 64]
+
+Metadata Options (4 options) ▶️
+
+Automatic Extraction: [Page numbers, Section titles, None]
+Custom Metadata Fields: [Add custom fields]
+Store Original Text: [Yes, No]
+Document Structure: [Preserve hierarchy, Flatten structure]
+
+Advanced Settings (5 options) ▶️
+
+Language Processing: [Auto-detect language, Specific language, Multilingual]
+Quality Control: [Remove duplicates, Filter by relevance threshold]
+Vector Dimension Reduction: [None, PCA, t-SNE]
+Content Enrichment: [Generate titles for chunks, Summarize chunks]
+Index Parameters: [Distance metric, Number of shards]
+
+System Settings (3 options) ▶️
+
+Processing Allocation: [CPU, GPU]
+Parallel Processing: [Threads: 1, 2, 4, 8]
+Error Handling: [Skip problematic files, Abort on error, Attempt recovery]
+
+This structure gives users a clear view of essential options while organizing related settings into logical, collapsible containers. Each container shows how many options remain to be selected, and an overall completion indicator at the top of the sidebar tracks progress through all required settings.
