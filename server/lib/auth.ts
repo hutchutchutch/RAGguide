@@ -11,7 +11,18 @@ import { log } from "../vite";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Define User interface for passport
+    interface User {
+      id: string;
+      username: string;
+      email: string;
+      password: string | null;
+      avatar_url: string | null;
+      google_id: string | null;
+      google_access_token: string | null;
+      google_refresh_token: string | null;
+      last_login: Date | null;
+    }
   }
 }
 

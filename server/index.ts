@@ -6,6 +6,11 @@ import session from "express-session";
 import { setupAuth } from "./lib/auth";
 import ConnectPgSimple from "connect-pg-simple";
 import { neonConfig, Pool } from "@neondatabase/serverless";
+import ws from 'ws';
+
+// Configure Neon to use the ws package for WebSocket connections
+// This is required for connecting through custom domains
+neonConfig.webSocketConstructor = ws;
 
 const app = express();
 app.use(express.json());
