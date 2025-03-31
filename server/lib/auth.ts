@@ -90,6 +90,8 @@ export function setupAuth(app: Express) {
           clientID: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
           callbackURL: callbackURL,
+          // Ensure proxy is true to trust the Replit/custom domain proxy
+          proxy: true,
           scope: [
             "profile", 
             "email", 
@@ -240,6 +242,8 @@ export function setupAuth(app: Express) {
     "/api/auth/google/callback",
     (req: Request, res: Response, next: NextFunction) => {
       log(`[auth] Processing callback - raw URL: ${req.url}`);
+      log(`[auth] Processing callback - headers: ${JSON.stringify(req.headers)}`);
+      log(`[auth] Processing callback - query params: ${JSON.stringify(req.query)}`);
       next();
     },
     passport.authenticate("google", { 
@@ -249,6 +253,7 @@ export function setupAuth(app: Express) {
     }),
     (req: Request, res: Response) => {
       log(`[auth] Authentication successful, redirecting to dashboard...`);
+      log(`[auth] User data: ${JSON.stringify(req.user)}`);
       
       // Redirect to the frontend dashboard
       res.redirect("/");
@@ -256,6 +261,7 @@ export function setupAuth(app: Express) {
     (err: any, req: Request, res: Response, next: NextFunction) => {
       // Error handler
       log(`[auth] OAuth error: ${err.message || 'Unknown error'}`);
+      log(`[auth] Full error object: ${JSON.stringify(err)}`);
       res.redirect("/auth?error=oauth_failed");
     }
   );

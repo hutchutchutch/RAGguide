@@ -52,7 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = useLogoutMutation();
 
   const loginWithGoogle = () => {
-    window.location.href = "/api/auth/google";
+    // Use the absolute URL to ensure proper redirects with custom domains
+    const baseUrl = window.location.origin;
+    window.location.href = `${baseUrl}/api/auth/google`;
+    console.log(`Redirecting to Google OAuth: ${baseUrl}/api/auth/google`);
   };
 
   return (

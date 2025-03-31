@@ -28,7 +28,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             <Brain className="h-12 w-12 text-purple-500" />
           </div>
           <DialogTitle className="text-2xl font-bold text-white mb-2">
-            Welcome to BookRAG
+            Welcome to RAG Guide 🤓
           </DialogTitle>
           <DialogDescription className="text-gray-400 text-base">
             Sign in to start exploring your Google Drive documents with advanced
@@ -45,16 +45,20 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             <FcGoogle className="mr-2 h-5 w-5" />
             Continue with Google
           </Button>
-          
+
           <div className="bg-indigo-900/30 border border-indigo-800 rounded-md p-3 mt-4">
             <p className="text-sm text-gray-300">
-              <span className="font-medium text-indigo-400">Limited access:</span> We only access files you explicitly open or create with our app. You'll be able to choose which documents to share.
+              <span className="font-medium text-indigo-400">
+                Limited access:
+              </span>{" "}
+              We only access files you explicitly open or create with our app.
+              You'll be able to choose which documents to share.
             </p>
           </div>
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-4">
-          By continuing, you agree to BookRAG's Terms of Service and Privacy
+          By continuing, you agree to RAG Guide's Terms of Service and Privacy
           Policy
         </p>
       </DialogContent>
