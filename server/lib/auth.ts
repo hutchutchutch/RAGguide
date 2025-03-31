@@ -64,17 +64,24 @@ export function setupAuth(app: Express) {
 
   // Google OAuth strategy
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    // Get the current app URL
+    const appUrl = process.env.APP_URL || 
+      `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`;
+    
+    // Create a function to determine the full callback URL
+    const callbackURL = `${appUrl}/api/auth/google/callback`;
+    
+    log("[auth] Using Google OAuth callback URL: " + callbackURL);
+    
     passport.use(
       new GoogleStrategy(
         {
           clientID: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          callbackURL: "/api/auth/google/callback",
+          callbackURL: callbackURL,
           scope: ["profile", "email", "https://www.googleapis.com/auth/drive.readonly"],
-          accessType: "offline",
-          prompt: "consent",
         },
-        async (accessToken, refreshToken, profile, done) => {
+        async (accessToken: string, refreshToken: string, profile: any, done: any) => {
           try {
             // Check if user exists
             let user = await storage.getUserByGoogleId(profile.id);

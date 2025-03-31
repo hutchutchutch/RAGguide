@@ -149,7 +149,7 @@ export default function DriveFilePicker({ onFileImported }: DriveFilePickerProps
               </TabsTrigger>
             </TabsList>
             <div className="text-sm text-muted-foreground">
-              Signed in as {user.display_name}
+              Signed in as {user.username}
             </div>
           </div>
           
