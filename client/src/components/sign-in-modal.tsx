@@ -18,11 +18,11 @@ interface SignInModalProps {
 
 export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   const [, setLocation] = useLocation();
-  
+
   const handleGoogleLogin = () => {
     window.location.href = "/api/auth/google";
   };
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md bg-[#252525] border border-gray-700 text-white">
@@ -34,13 +34,14 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             Welcome to BookRAG
           </DialogTitle>
           <DialogDescription className="text-gray-400 text-base">
-            Sign in to start exploring your documents with advanced RAG techniques
+            Sign in to start exploring your Google Drive documents with advanced
+            RAG techniques
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="mt-6 mb-2">
-          <Button 
-            onClick={handleGoogleLogin} 
+          <Button
+            onClick={handleGoogleLogin}
             className="w-full bg-white hover:bg-gray-100 text-black font-medium h-12 text-base"
             size="lg"
           >
@@ -48,9 +49,10 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             Continue with Google
           </Button>
         </div>
-        
+
         <p className="text-center text-sm text-gray-500 mt-4">
-          By continuing, you agree to BookRAG's Terms of Service and Privacy Policy
+          By continuing, you agree to BookRAG's Terms of Service and Privacy
+          Policy
         </p>
       </DialogContent>
     </Dialog>
