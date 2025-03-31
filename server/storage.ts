@@ -13,7 +13,14 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { PgStorage } from './pg-storage';
 
+import session from "express-session";
+import memorystore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
+
 export interface IStorage {
+  // Session store
+  sessionStore: session.Store;
+  
   // User operations
   getUsers(): Promise<User[]>;
   getUserById(id: string): Promise<User | undefined>;
@@ -78,6 +85,7 @@ export class MemStorage implements IStorage {
   private nodes: Map<string, Node>;
   private edges: Map<string, Edge>;
   private nodeChunks: Map<string, NodeChunk>;
+  readonly sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
@@ -90,6 +98,12 @@ export class MemStorage implements IStorage {
     this.nodes = new Map();
     this.edges = new Map();
     this.nodeChunks = new Map();
+    
+    // Create memory store for sessions
+    const MemoryStore = memorystore(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // 24 hours
+    });
   }
 
   // User operations
@@ -356,8 +370,5 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Create a postgres storage instance to use in production
-const pgStorage = new PgStorage();
-
 // Use PostgreSQL storage in production, fall back to memory storage for development if needed
-export const storage: IStorage = process.env.DATABASE_URL ? pgStorage : new MemStorage();
+export const storage: IStorage = process.env.DATABASE_URL ? new PgStorage() : new MemStorage();

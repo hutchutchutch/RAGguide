@@ -3,8 +3,8 @@ import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth-context";
 import { FcGoogle } from "react-icons/fc";
 import { Loader2, Mail, Lock, Brain } from "lucide-react";
 
@@ -52,8 +52,8 @@ interface SignInModalProps {
 }
 
 export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
+  const { login, register, isLoading } = useAuth();
   const { toast } = useToast();
   
   const loginForm = useForm<LoginValues>({
@@ -75,55 +75,29 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   });
   
   const handleLogin = async (data: LoginValues) => {
-    setIsLoading(true);
     try {
-      await apiRequest("POST", "/auth/login", data);
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
+      await login(data.email, data.password);
       onClose();
       setLocation("/dashboard");
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "Invalid email or password. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error is already handled in the auth context
     }
   };
   
   const handleRegister = async (data: RegisterValues) => {
-    setIsLoading(true);
     try {
-      await apiRequest("POST", "/auth/register", {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      });
-      toast({
-        title: "Registration successful",
-        description: "Your account has been created. Please login.",
-      });
+      await register(data.name, data.email, data.password);
       registerForm.reset();
       // Switch to login tab
       const loginTab = document.querySelector('[data-state="inactive"][data-value="login"]') as HTMLElement;
       if (loginTab) loginTab.click();
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "This email may already be registered. Please try another email.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error is already handled in the auth context
     }
   };
   
   const handleGoogleLogin = () => {
-    window.location.href = "/auth/google";
+    window.location.href = "/api/auth/google";
   };
   
   return (

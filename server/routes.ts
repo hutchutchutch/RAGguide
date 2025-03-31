@@ -5,9 +5,9 @@ import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs";
-import openaiLib from "./lib/openai";
+import * as openaiLib from "./lib/openai";
 import { GoogleDriveService } from "./lib/drive";
-import { isAuthenticated, hasGoogleDriveAccess } from "./lib/auth";
+import { setupAuth, isAuthenticated, hasGoogleDriveAccess } from "./lib/auth";
 import { z } from "zod";
 import {
   insertBookSchema,
@@ -54,6 +54,8 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication
+  setupAuth(app);
   // Book routes
   app.get("/api/books", async (req, res) => {
     try {

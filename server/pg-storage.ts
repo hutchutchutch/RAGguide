@@ -14,12 +14,35 @@ import {
 import { db } from './lib/db';
 import { eq, and } from 'drizzle-orm';
 import * as schema from '../shared/schema';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
+import pg from 'pg';
+const { Pool } = pg;
+import { log } from './vite';
 
 /**
  * PostgreSQL implementation of the IStorage interface
  * This class provides persistent storage in a PostgreSQL database
  */
 export class PgStorage implements IStorage {
+  readonly sessionStore: session.Store;
+  
+  constructor() {
+    // Create a pool connection to the database
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+    
+    // Create the session store with PostgreSQL
+    const PostgresStore = connectPgSimple(session);
+    this.sessionStore = new PostgresStore({
+      pool,
+      createTableIfMissing: true,
+      tableName: 'session',
+    });
+    
+    log('PostgreSQL session store initialized', 'auth');
+  }
   // User operations
   async getUsers(): Promise<User[]> {
     return await db.select().from(schema.users);

@@ -6,8 +6,9 @@ import { vector } from "../server/lib/pgvector";
 // Users table for authentication
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
+  username: text("username").notNull(),
   email: text("email").notNull().unique(),
-  display_name: text("display_name").notNull(),
+  password: text("password"),
   avatar_url: text("avatar_url"),
   google_id: text("google_id").unique(),
   google_access_token: text("google_access_token"),
