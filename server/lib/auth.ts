@@ -227,25 +227,24 @@ export function setupAuth(app: Express) {
   
   app.get(
     "/api/auth/google/callback",
+    (req: Request, res: Response, next: NextFunction) => {
+      log(`[auth] Processing callback - raw URL: ${req.url}`);
+      next();
+    },
     passport.authenticate("google", { 
       failureRedirect: "/auth",
-      failWithError: true 
+      failWithError: true,
+      session: true
     }),
     (req: Request, res: Response) => {
-      // Get the base URL for the client
-      const baseUrl = process.env.APP_URL || 
-        `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`;
+      log(`[auth] Authentication successful, redirecting to dashboard...`);
       
-      // Log the redirect
-      const redirectUrl = `${baseUrl}/`;
-      log(`[auth] Redirecting after successful Google OAuth to: ${redirectUrl}`);
-      
-      // Redirect to the client-side dashboard
-      res.redirect(redirectUrl);
+      // Redirect to the frontend dashboard
+      res.redirect("/");
     },
     (err: any, req: Request, res: Response, next: NextFunction) => {
       // Error handler
-      console.error("OAuth error:", err);
+      log(`[auth] OAuth error: ${err.message || 'Unknown error'}`);
       res.redirect("/auth?error=oauth_failed");
     }
   );

@@ -56,6 +56,12 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
+  
+  // Add a fallback handler for Google OAuth callback to handle any redirect issues
+  app.get("/api/auth/google/callback", (req: Request, res: Response) => {
+    console.log("Fallback handler for OAuth callback triggered");
+    res.redirect("/");
+  });
   // Book routes
   app.get("/api/books", async (req, res) => {
     try {
