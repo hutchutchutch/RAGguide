@@ -66,7 +66,7 @@ export function setupAuth(app: Express) {
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     // Get the current app URL
     const appUrl = process.env.APP_URL || 
-      `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`;
+      `https://rag.guide`;
     
     // Create a function to determine the full callback URL
     const callbackURL = `${appUrl}/api/auth/google/callback`;
