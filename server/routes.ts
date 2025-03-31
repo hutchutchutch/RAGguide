@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs";
 import openaiLib from "./lib/openai";
+import { z } from "zod";
 import {
   insertBookSchema,
   insertEmbeddingSettingsSchema,
@@ -17,6 +18,11 @@ import {
   insertEdgeSchema,
   insertNodeChunkSchema,
 } from "@shared/schema";
+
+// Schema for rating an embedding setting
+const ratingSchema = z.object({
+  rating: z.number().int().min(1).max(5)
+});
 
 // Set up file storage for PDFs
 const upload = multer({
@@ -87,6 +93,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Embedding settings routes
+  app.get("/api/embedding-settings", async (req, res) => {
+    try {
+      const settings = await storage.getEmbeddingSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch embedding settings", error: error.message });
+    }
+  });
+  
+  app.get("/api/embedding-settings/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const settings = await storage.getEmbeddingSettingsById(id);
+      
+      if (!settings) {
+        return res.status(404).json({ message: "Embedding settings not found" });
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch embedding settings", error: error.message });
+    }
+  });
+  
   app.post("/api/embedding-settings", async (req, res) => {
     try {
       const settingsData = insertEmbeddingSettingsSchema.parse(req.body);
@@ -94,6 +124,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(settings);
     } catch (error) {
       res.status(400).json({ message: "Failed to create embedding settings", error: error.message });
+    }
+  });
+  
+  app.post("/api/embedding-settings/:id/rate", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { rating } = ratingSchema.parse(req.body);
+      
+      // First get the existing settings
+      const settings = await storage.getEmbeddingSettingsById(id);
+      
+      if (!settings) {
+        return res.status(404).json({ message: "Embedding settings not found" });
+      }
+      
+      // Update the rating
+      const updatedSettings = await storage.updateEmbeddingSettings(id, { ...settings, rating });
+      
+      res.json(updatedSettings);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to rate embedding settings", error: error.message });
     }
   });
 

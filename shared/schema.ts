@@ -19,6 +19,9 @@ export const embeddingSettings = pgTable("embedding_settings", {
   cleaner: text("cleaner").notNull(), // 'simple' | 'advanced' | 'ocr-optimized'
   strategy: text("strategy").notNull(), // 'recursive' | 'semantic'
   model: text("model").notNull(),
+  rating: integer("rating"), // 1-5 star rating
+  name: text("name"), // User-provided name for this configuration
+  description: text("description"), // User-provided description
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 

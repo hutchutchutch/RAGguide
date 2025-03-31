@@ -35,13 +35,31 @@ export class PgStorage implements IStorage {
   }
 
   // Embedding settings operations
-  async getEmbeddingSettings(id: string): Promise<EmbeddingSettings | undefined> {
+  async getEmbeddingSettings(): Promise<EmbeddingSettings[]> {
+    return await db.select().from(schema.embeddingSettings);
+  }
+  
+  async getEmbeddingSettingsById(id: string): Promise<EmbeddingSettings | undefined> {
     const results = await db.select().from(schema.embeddingSettings).where(eq(schema.embeddingSettings.id, id));
     return results[0];
   }
 
   async createEmbeddingSettings(settings: InsertEmbeddingSettings): Promise<EmbeddingSettings> {
     const results = await db.insert(schema.embeddingSettings).values(settings).returning();
+    return results[0];
+  }
+  
+  async updateEmbeddingSettings(id: string, updates: Partial<EmbeddingSettings>): Promise<EmbeddingSettings> {
+    const results = await db
+      .update(schema.embeddingSettings)
+      .set(updates)
+      .where(eq(schema.embeddingSettings.id, id))
+      .returning();
+      
+    if (results.length === 0) {
+      throw new Error(`Embedding settings with ID ${id} not found`);
+    }
+    
     return results[0];
   }
 

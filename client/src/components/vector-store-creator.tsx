@@ -22,13 +22,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { insertEmbeddingSettingsSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import SettingsCarousel from "@/components/settings-carousel";
 
 const embeddingFormSchema = insertEmbeddingSettingsSchema.extend({
   chunkSize: z.coerce.number().min(100, "Chunk size must be at least 100").max(8000, "Chunk size must not exceed 8000"),
   overlap: z.coerce.number().min(0, "Overlap cannot be negative").max(1000, "Overlap must not exceed 1000"),
   vectorDb: z.string().min(1, "Vector database is required"),
   embeddingModel: z.string().min(1, "Embedding model is required"),
-  documentType: z.string().min(1, "Document type is required"),
   specialContentHandling: z.string().optional(),
   documentPreprocessing: z.array(z.string()).optional(),
   modelDimensions: z.string().optional(),
@@ -88,7 +88,6 @@ export default function VectorStoreCreator() {
       model: "text-embedding-ada-002",
       vectorDb: "pgvector",
       embeddingModel: "openai",
-      documentType: "pdf",
       specialContentHandling: "keep-tables",
       documentPreprocessing: ["clean-formatting"],
       modelDimensions: "1536",
@@ -113,11 +112,10 @@ export default function VectorStoreCreator() {
     {
       title: "Primary Options",
       key: "primary",
-      optionsCount: 3,
+      optionsCount: 2,
       completedOptions: [
         form.watch("vectorDb"),
-        form.watch("embeddingModel"),
-        form.watch("documentType")
+        form.watch("embeddingModel")
       ].filter(Boolean).length
     },
     {
@@ -303,33 +301,17 @@ export default function VectorStoreCreator() {
                 )}
               />
               
-              <FormField
-                control={form.control}
-                name="documentType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-300">Document Type</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="input-highlight animated-border">
-                          <SelectValue placeholder="Select document type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-[#303030] border-gray-600 text-white">
-                        <SelectItem value="pdf">PDF</SelectItem>
-                        <SelectItem value="txt">TXT</SelectItem>
-                        <SelectItem value="docx">DOCX</SelectItem>
-                        <SelectItem value="csv">CSV</SelectItem>
-                        <SelectItem value="mixed">Mixed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
-              />
+              {/* Document type info */}
+              <div className="bg-gray-800 rounded-md p-3 border border-gray-700 mt-2">
+                <div className="flex items-center space-x-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-sm text-gray-300">
+                    Document type will be automatically detected from your uploaded file.
+                  </p>
+                </div>
+              </div>
             </div>
             
             {/* Text Processing */}

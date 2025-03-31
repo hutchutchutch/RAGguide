@@ -19,8 +19,10 @@ export interface IStorage {
   createBook(book: InsertBook): Promise<Book>;
   
   // Embedding settings operations
-  getEmbeddingSettings(id: string): Promise<EmbeddingSettings | undefined>;
+  getEmbeddingSettings(): Promise<EmbeddingSettings[]>;
+  getEmbeddingSettingsById(id: string): Promise<EmbeddingSettings | undefined>;
   createEmbeddingSettings(settings: InsertEmbeddingSettings): Promise<EmbeddingSettings>;
+  updateEmbeddingSettings(id: string, settings: Partial<EmbeddingSettings>): Promise<EmbeddingSettings>;
   
   // Chunk operations
   getChunks(bookId: string, settingsId: string): Promise<Chunk[]>;
@@ -99,7 +101,11 @@ export class MemStorage implements IStorage {
   }
 
   // Embedding settings operations
-  async getEmbeddingSettings(id: string): Promise<EmbeddingSettings | undefined> {
+  async getEmbeddingSettings(): Promise<EmbeddingSettings[]> {
+    return Array.from(this.embeddingSettings.values());
+  }
+  
+  async getEmbeddingSettingsById(id: string): Promise<EmbeddingSettings | undefined> {
     return this.embeddingSettings.get(id);
   }
 
@@ -109,9 +115,28 @@ export class MemStorage implements IStorage {
       ...settings,
       id,
       created_at: new Date(),
+      rating: null,
+      name: null,
+      description: null
     };
     this.embeddingSettings.set(id, newSettings);
     return newSettings;
+  }
+  
+  async updateEmbeddingSettings(id: string, updates: Partial<EmbeddingSettings>): Promise<EmbeddingSettings> {
+    const existingSettings = this.embeddingSettings.get(id);
+    
+    if (!existingSettings) {
+      throw new Error(`Embedding settings with ID ${id} not found`);
+    }
+    
+    const updatedSettings = {
+      ...existingSettings,
+      ...updates
+    };
+    
+    this.embeddingSettings.set(id, updatedSettings);
+    return updatedSettings;
   }
 
   // Chunk operations
