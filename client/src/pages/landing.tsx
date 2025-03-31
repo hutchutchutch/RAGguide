@@ -1,163 +1,190 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import SignInModal from "@/components/sign-in-modal";
-import { ArrowRight, Book, Brain, Database, GitCompare, MessageSquare } from "lucide-react";
+import { 
+  ArrowRight, BookText, LucideBookOpen, 
+  Brain, Database, GitCompare, MessageSquare, 
+  Sparkles, Search, Layers, BarChart 
+} from "lucide-react";
 
 export default function Landing() {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white">
+    <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Navigation */}
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Brain className="h-8 w-8 text-purple-500" />
-          <span className="font-bold text-xl">BookRAG</span>
+      <header className="container mx-auto px-6 py-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <Brain className="h-8 w-8 text-indigo-500" />
+          <span className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-600">BookMind</span>
         </div>
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
-          <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How it works</a>
-          <Button 
-            onClick={() => setIsSignInOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
-            Sign In
-          </Button>
-        </nav>
         <Button 
           onClick={() => setIsSignInOpen(true)}
-          className="md:hidden bg-purple-600 hover:bg-purple-700"
+          className="bg-indigo-600 hover:bg-indigo-700 transition duration-300 font-medium"
+          size="lg"
         >
-          Sign In
+          Get Started
         </Button>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 flex flex-col items-center text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-purple-600 text-transparent bg-clip-text">
-          Advanced Document Analysis with RAG
-        </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mb-10">
-          Upload your PDFs and TXT files, experiment with different chunking strategies, and explore 
-          the power of Retrieval-Augmented Generation.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button 
-            onClick={() => setIsSignInOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 text-lg px-8 py-6"
-            size="lg"
-          >
-            Get Started <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white text-lg px-8 py-6"
-            size="lg"
-          >
-            Learn More
-          </Button>
+      <section className="relative container mx-auto px-6 py-24 md:py-32">
+        {/* Background Effect */}
+        <div className="absolute top-0 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full filter blur-3xl opacity-30" />
+        <div className="absolute bottom-0 -right-40 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-30" />
+        
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <div className="flex flex-col items-center text-center">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 mb-8 text-sm">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 mr-2"></span>
+              Advanced document analysis with large language models
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight bg-gradient-to-br from-white via-indigo-200 to-purple-400 text-transparent bg-clip-text leading-tight">
+              Unlock deeper insights from your documents
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mb-12 leading-relaxed">
+              Upload PDFs and TXT files, customize chunking strategies, and explore 
+              different retrieval methods with BookMind's advanced RAG platform.
+            </p>
+            
+            <Button 
+              onClick={() => setIsSignInOpen(true)}
+              className="bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-lg px-8 py-7 rounded-full shadow-lg shadow-indigo-900/30 transition duration-300"
+              size="lg"
+            >
+              Start For Free <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            
+            <div className="flex items-center gap-1 mt-6 text-gray-400 text-sm">
+              <Sparkles className="h-4 w-4 mr-1 text-indigo-500" />
+              No credit card required
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="bg-[#1a1a1a] py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center">
-            Powerful RAG <span className="text-purple-500">Features</span>
-          </h2>
+      {/* Features Grid */}
+      <section className="relative bg-gradient-to-b from-black to-indigo-950/30 py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              Advanced <span className="text-indigo-400">RAG</span> Features
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Powerful tools to experiment with and optimize retrieval-augmented generation strategies
+            </p>
+          </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Book className="h-10 w-10 text-purple-500" />}
-              title="Flexible Document Upload"
-              description="Upload PDFs and TXT files from your device or import directly from Google Drive."
+              icon={<BookText className="h-8 w-8 text-indigo-400" />}
+              title="Multiple Document Formats"
+              description="Upload PDFs, TXT files or import directly from Google Drive."
             />
             <FeatureCard 
-              icon={<Database className="h-10 w-10 text-purple-500" />}
-              title="Custom Chunking Options"
-              description="Experiment with different chunking strategies to optimize retrieval results."
+              icon={<Layers className="h-8 w-8 text-indigo-400" />}
+              title="Flexible Chunking Options"
+              description="Experiment with overlapping, semantic, or size-based chunking."
             />
             <FeatureCard 
-              icon={<Brain className="h-10 w-10 text-purple-500" />}
-              title="Knowledge Graph Generation"
-              description="Create and visualize knowledge graphs from your document content."
+              icon={<Brain className="h-8 w-8 text-indigo-400" />}
+              title="Knowledge Graph Creation"
+              description="Automatically generate and visualize knowledge graphs from your content."
             />
             <FeatureCard 
-              icon={<GitCompare className="h-10 w-10 text-purple-500" />}
-              title="RAG Strategy Comparison"
-              description="Compare traditional RAG vs GraphRAG approaches to find the best solution."
+              icon={<GitCompare className="h-8 w-8 text-indigo-400" />}
+              title="Strategy Comparison"
+              description="Compare traditional vs graph-based RAG approaches side by side."
             />
             <FeatureCard 
-              icon={<MessageSquare className="h-10 w-10 text-purple-500" />}
-              title="Interactive Chat Interface"
-              description="Query your documents through a natural conversation interface."
+              icon={<MessageSquare className="h-8 w-8 text-indigo-400" />}
+              title="AI Chat Interface"
+              description="Query your documents through a conversational AI interface."
             />
             <FeatureCard 
-              icon={<Database className="h-10 w-10 text-purple-500" />}
-              title="Vector Store Insights"
-              description="Rate and analyze the quality of different vector store configurations."
+              icon={<BarChart className="h-8 w-8 text-indigo-400" />}
+              title="Performance Analytics"
+              description="Rate and analyze quality metrics across different configurations."
             />
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center">
-            How It <span className="text-purple-500">Works</span>
-          </h2>
+      <section className="py-24 bg-black">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              How It <span className="text-indigo-400">Works</span>
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Three simple steps to get started with BookMind
+            </p>
+          </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-center gap-12 max-w-5xl mx-auto relative">
+            {/* Line connecting steps */}
+            <div className="hidden md:block absolute top-24 left-24 right-24 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 z-0"></div>
+            
             <StepCard 
               number={1}
-              title="Upload Your Document"
-              description="Upload a PDF or TXT file from your device or import from Google Drive."
+              icon={<LucideBookOpen className="h-6 w-6" />}
+              title="Upload Document"
+              description="Upload PDF or TXT files from your device or import directly from Google Drive."
             />
             <StepCard 
               number={2}
-              title="Configure Chunking"
-              description="Choose from various chunking strategies and embedding options."
+              icon={<Layers className="h-6 w-6" />}
+              title="Configure Settings"
+              description="Select your chunking strategy, embedding options, and vector store settings."
             />
             <StepCard 
               number={3}
-              title="Explore and Compare"
-              description="Use the chat interface to query your documents and compare different RAG approaches."
+              icon={<Search className="h-6 w-6" />}
+              title="Query & Analyze"
+              description="Use the chat interface to ask questions and compare different RAG approaches."
             />
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-purple-700 to-purple-900 py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to get started?
-          </h2>
-          <p className="text-xl mb-10 max-w-2xl mx-auto">
-            Sign in now to begin exploring your documents with advanced RAG techniques.
-          </p>
-          <Button 
-            onClick={() => setIsSignInOpen(true)}
-            className="bg-white text-purple-900 hover:bg-gray-100 text-lg px-8 py-6"
-            size="lg"
-          >
-            Sign In Now
-          </Button>
+      <section className="relative py-24 overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-br from-indigo-900/20 to-purple-900/20"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/20 rounded-full filter blur-3xl opacity-30"></div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-indigo-300 bg-clip-text text-transparent">
+              Ready to transform your document analysis?
+            </h2>
+            <p className="text-xl mb-12 text-gray-300 max-w-2xl mx-auto">
+              Join now and start exploring your documents with cutting-edge RAG techniques
+            </p>
+            <Button 
+              onClick={() => setIsSignInOpen(true)}
+              className="bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-lg px-10 py-7 rounded-full shadow-lg shadow-indigo-900/30"
+              size="lg"
+            >
+              Get Started
+            </Button>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0a0a0a] py-10">
-        <div className="container mx-auto px-4">
+      <footer className="py-12 border-t border-gray-800">
+        <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <Brain className="h-6 w-6 text-purple-500" />
-              <span className="font-bold text-lg">BookRAG</span>
+            <div className="flex items-center gap-3 mb-6 md:mb-0">
+              <Brain className="h-6 w-6 text-indigo-500" />
+              <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-600">BookMind</span>
             </div>
-            <div className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} BookRAG. All rights reserved.
+            <div className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} BookMind Explorer. All rights reserved.
             </div>
           </div>
         </div>
@@ -177,26 +204,32 @@ function FeatureCard({ icon, title, description }: {
   description: string;
 }) {
   return (
-    <div className="bg-[#252525] p-6 rounded-lg hover:shadow-lg hover:shadow-purple-900/10 transition-all border border-gray-800">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
+    <div className="bg-gradient-to-br from-gray-900 to-gray-950 p-8 rounded-2xl border border-gray-800 hover:border-indigo-900/50 hover:shadow-lg hover:shadow-indigo-900/10 transition-all duration-300 group h-full">
+      <div className="mb-5 p-3 bg-indigo-950/50 inline-block rounded-xl border border-indigo-900/50 group-hover:bg-indigo-900/30 transition-all duration-300">
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold mb-3 text-white group-hover:text-indigo-300 transition-all duration-300">{title}</h3>
       <p className="text-gray-400">{description}</p>
     </div>
   );
 }
 
-function StepCard({ number, title, description }: {
+function StepCard({ number, icon, title, description }: {
   number: number;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }) {
   return (
-    <div className="flex flex-col items-center text-center">
-      <div className="w-16 h-16 rounded-full bg-purple-600 flex items-center justify-center mb-4 text-2xl font-bold">
+    <div className="flex flex-col items-center text-center relative z-10 flex-1">
+      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center mb-6 text-2xl font-bold shadow-lg shadow-indigo-900/20">
         {number}
       </div>
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <p className="text-gray-400">{description}</p>
+      <div className="p-3 bg-indigo-900/20 rounded-xl border border-indigo-800/40 inline-flex mb-4">
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold mb-3 text-white">{title}</h3>
+      <p className="text-gray-400 max-w-xs">{description}</p>
     </div>
   );
 }
