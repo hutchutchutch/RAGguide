@@ -1,13 +1,29 @@
-import { pgTable, text, serial, integer, timestamp, uuid, real, primaryKey, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, uuid, real, primaryKey, json, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { vector } from "../server/lib/pgvector";
+
+// Users table for authentication
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  display_name: text("display_name").notNull(),
+  avatar_url: text("avatar_url"),
+  google_id: text("google_id").unique(),
+  google_access_token: text("google_access_token"),
+  google_refresh_token: text("google_refresh_token"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  last_login: timestamp("last_login").defaultNow().notNull(),
+});
 
 // Books table for storing uploaded PDFs
 export const books = pgTable("books", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),
   filename: text("filename").notNull(),
+  user_id: uuid("user_id").references(() => users.id),
+  source: text("source").notNull().default("upload"), // 'upload', 'google_drive'
+  drive_file_id: text("drive_file_id"), // For files imported from Google Drive
   uploaded_at: timestamp("uploaded_at").defaultNow().notNull(),
 });
 
@@ -91,6 +107,7 @@ export const nodeChunks = pgTable("node_chunks", {
 });
 
 // Insert schemas
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, created_at: true, last_login: true });
 export const insertBookSchema = createInsertSchema(books).omit({ id: true, uploaded_at: true });
 export const insertEmbeddingSettingsSchema = createInsertSchema(embeddingSettings).omit({ id: true, created_at: true });
 export const insertChunkSchema = createInsertSchema(chunks).omit({ id: true, embedding_vector: true });
@@ -102,6 +119,9 @@ export const insertEdgeSchema = createInsertSchema(edges).omit({ id: true });
 export const insertNodeChunkSchema = createInsertSchema(nodeChunks).omit({ id: true });
 
 // Types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
 export type Book = typeof books.$inferSelect;
 export type InsertBook = z.infer<typeof insertBookSchema>;
 

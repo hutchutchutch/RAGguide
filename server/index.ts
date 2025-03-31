@@ -2,10 +2,51 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeDatabase } from "./lib/db";
+import session from "express-session";
+import { setupAuth } from "./lib/auth";
+import ConnectPgSimple from "connect-pg-simple";
+import { neonConfig, Pool } from "@neondatabase/serverless";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Configure session
+const sessionSecret = process.env.SESSION_SECRET || 'ragexplorer-secret';
+
+// Use PostgreSQL session store if DATABASE_URL is provided
+if (process.env.DATABASE_URL) {
+  const PgSession = ConnectPgSimple(session);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  
+  app.use(session({
+    store: new PgSession({
+      pool: pool,
+      tableName: 'user_sessions', // Custom session table name
+      createTableIfMissing: true,
+    }),
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      secure: process.env.NODE_ENV === 'production',
+    }
+  }));
+} else {
+  // Use memory store for development
+  app.use(session({
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    }
+  }));
+}
+
+// Set up authentication
+setupAuth(app);
 
 app.use((req, res, next) => {
   const start = Date.now();

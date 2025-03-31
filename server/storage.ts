@@ -1,4 +1,5 @@
 import {
+  User, InsertUser,
   Book, InsertBook, 
   EmbeddingSettings, InsertEmbeddingSettings,
   Chunk, InsertChunk,
@@ -13,8 +14,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { PgStorage } from './pg-storage';
 
 export interface IStorage {
+  // User operations
+  getUsers(): Promise<User[]>;
+  getUserById(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, updates: Partial<User>): Promise<User>;
+  
   // Book operations
   getBooks(): Promise<Book[]>;
+  getBooksByUserId(userId: string): Promise<Book[]>;
   getBook(id: string): Promise<Book | undefined>;
   createBook(book: InsertBook): Promise<Book>;
   
@@ -58,6 +68,7 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  private users: Map<string, User>;
   private books: Map<string, Book>;
   private embeddingSettings: Map<string, EmbeddingSettings>;
   private chunks: Map<string, Chunk>;
@@ -69,6 +80,7 @@ export class MemStorage implements IStorage {
   private nodeChunks: Map<string, NodeChunk>;
 
   constructor() {
+    this.users = new Map();
     this.books = new Map();
     this.embeddingSettings = new Map();
     this.chunks = new Map();
@@ -80,9 +92,62 @@ export class MemStorage implements IStorage {
     this.nodeChunks = new Map();
   }
 
+  // User operations
+  async getUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.google_id === googleId);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const id = uuidv4();
+    const newUser: User = {
+      ...user,
+      id,
+      avatar_url: user.avatar_url || null,
+      google_id: user.google_id || null,
+      google_access_token: user.google_access_token || null,
+      google_refresh_token: user.google_refresh_token || null,
+      created_at: new Date(),
+      last_login: new Date(),
+    };
+    this.users.set(id, newUser);
+    return newUser;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User> {
+    const existingUser = this.users.get(id);
+    
+    if (!existingUser) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    
+    const updatedUser = {
+      ...existingUser,
+      ...updates
+    };
+    
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
   // Book operations
   async getBooks(): Promise<Book[]> {
     return Array.from(this.books.values());
+  }
+
+  async getBooksByUserId(userId: string): Promise<Book[]> {
+    return Array.from(this.books.values()).filter(book => book.user_id === userId);
   }
 
   async getBook(id: string): Promise<Book | undefined> {
@@ -94,6 +159,9 @@ export class MemStorage implements IStorage {
     const newBook: Book = {
       ...book,
       id,
+      user_id: book.user_id || null,
+      source: book.source || 'upload',
+      drive_file_id: book.drive_file_id || null,
       uploaded_at: new Date(),
     };
     this.books.set(id, newBook);

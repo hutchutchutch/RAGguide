@@ -6,6 +6,7 @@ import { insertBookSchema } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import DriveFilePicker from "./drive-file-picker";
 
 import {
   Dialog,
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const uploadSchema = insertBookSchema.extend({
@@ -105,85 +106,132 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
     }
   };
 
+  const handleFileImported = (bookId: string) => {
+    toast({
+      title: "Book imported successfully",
+      description: "The book has been imported from Google Drive and is ready for processing.",
+    });
+    
+    // Invalidate books query to refresh the list
+    queryClient.invalidateQueries({ queryKey: ["/api/books"] });
+    
+    // Close modal
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-[#252525] border border-gray-700 text-white">
+      <DialogContent className="sm:max-w-md lg:max-w-lg bg-[#252525] border border-gray-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-white">Upload New Book</DialogTitle>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-300">Book Title</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter book title..." 
-                      className="bg-[#303030] border-gray-600 text-white placeholder:text-gray-500 focus-visible:ring-gray-500"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-400" />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="file"
-              render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-300">File Upload (PDF or TXT)</FormLabel>
-                  <FormControl>
-                    <div 
-                      className={`border-2 border-dashed rounded-md p-4 text-center ${
-                        isDragging ? "border-gray-400 bg-[#303030]" : "border-gray-600"
-                      }`}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                    >
-                      <div className="mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="17 8 12 3 7 8"></polyline>
-                          <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                      </div>
-                      <p className="text-sm text-gray-300 mb-2">
-                        {value ? value.name : "Drag & drop your PDF or TXT file here or"}
-                      </p>
-                      <Button
-                        type="button"
-                        className="bg-[#303030] hover:bg-[#404040] text-white"
-                        onClick={() => {
-                          const input = document.createElement("input");
-                          input.type = "file";
-                          input.accept = "application/pdf,text/plain";
-                          input.onchange = (e) => {
-                            const file = (e.target as HTMLInputElement).files?.[0];
-                            if (file) {
-                              onChange(file);
-                            }
-                          };
-                          input.click();
-                        }}
-                      >
-                        Browse Files
-                      </Button>
-                      <p className="text-xs text-gray-500 mt-2">Maximum file size: 20MB</p>
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-red-400" />
-                </FormItem>
-              )}
-            />
-            
-            <DialogFooter className="flex justify-end gap-3">
+        <Tabs defaultValue="local" className="mt-4">
+          <TabsList className="grid w-full grid-cols-2 bg-[#303030]">
+            <TabsTrigger value="local" className="text-white data-[state=active]:bg-[#404040]">
+              Local Upload
+            </TabsTrigger>
+            <TabsTrigger value="google" className="text-white data-[state=active]:bg-[#404040]">
+              Google Drive
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="local" className="mt-4">
+            <Form {...form}>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-300">Book Title</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter book title..." 
+                          className="bg-[#303030] border-gray-600 text-white placeholder:text-gray-500 focus-visible:ring-gray-500"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="file"
+                  render={({ field: { value, onChange, ...fieldProps } }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-300">File Upload (PDF or TXT)</FormLabel>
+                      <FormControl>
+                        <div 
+                          className={`border-2 border-dashed rounded-md p-4 text-center ${
+                            isDragging ? "border-gray-400 bg-[#303030]" : "border-gray-600"
+                          }`}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                        >
+                          <div className="mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-10 w-10 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                              <polyline points="17 8 12 3 7 8"></polyline>
+                              <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                          </div>
+                          <p className="text-sm text-gray-300 mb-2">
+                            {value ? value.name : "Drag & drop your PDF or TXT file here or"}
+                          </p>
+                          <Button
+                            type="button"
+                            className="bg-[#303030] hover:bg-[#404040] text-white"
+                            onClick={() => {
+                              const input = document.createElement("input");
+                              input.type = "file";
+                              input.accept = "application/pdf,text/plain";
+                              input.onchange = (e) => {
+                                const file = (e.target as HTMLInputElement).files?.[0];
+                                if (file) {
+                                  onChange(file);
+                                }
+                              };
+                              input.click();
+                            }}
+                          >
+                            Browse Files
+                          </Button>
+                          <p className="text-xs text-gray-500 mt-2">Maximum file size: 20MB</p>
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+                
+                <DialogFooter className="flex justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-gray-600 text-gray-300 hover:bg-[#303030] hover:text-white"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-[#303030] hover:bg-[#404040] text-white"
+                    disabled={isSubmitting || !form.formState.isValid}
+                  >
+                    {isSubmitting ? "Uploading..." : "Upload & Process"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </TabsContent>
+          
+          <TabsContent value="google" className="mt-4">
+            <DriveFilePicker onFileImported={handleFileImported} />
+            <div className="flex justify-end mt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -192,16 +240,9 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="bg-[#303030] hover:bg-[#404040] text-white"
-                disabled={isSubmitting || !form.formState.isValid}
-              >
-                {isSubmitting ? "Uploading..." : "Upload & Process"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

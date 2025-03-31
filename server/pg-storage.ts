@@ -1,5 +1,6 @@
 import { IStorage } from './storage';
 import { 
+  User, InsertUser,
   Book, InsertBook, 
   EmbeddingSettings, InsertEmbeddingSettings,
   Chunk, InsertChunk,
@@ -19,9 +20,51 @@ import * as schema from '../shared/schema';
  * This class provides persistent storage in a PostgreSQL database
  */
 export class PgStorage implements IStorage {
+  // User operations
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(schema.users);
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const results = await db.select().from(schema.users).where(eq(schema.users.id, id));
+    return results[0];
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const results = await db.select().from(schema.users).where(eq(schema.users.email, email));
+    return results[0];
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const results = await db.select().from(schema.users).where(eq(schema.users.google_id, googleId));
+    return results[0];
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const results = await db.insert(schema.users).values(user).returning();
+    return results[0];
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User> {
+    const results = await db.update(schema.users)
+      .set(updates)
+      .where(eq(schema.users.id, id))
+      .returning();
+    
+    if (results.length === 0) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    
+    return results[0];
+  }
+
   // Book operations
   async getBooks(): Promise<Book[]> {
     return await db.select().from(schema.books);
+  }
+
+  async getBooksByUserId(userId: string): Promise<Book[]> {
+    return await db.select().from(schema.books).where(eq(schema.books.user_id, userId));
   }
 
   async getBook(id: string): Promise<Book | undefined> {

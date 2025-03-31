@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs";
 import openaiLib from "./lib/openai";
+import { GoogleDriveService } from "./lib/drive";
+import { isAuthenticated, hasGoogleDriveAccess } from "./lib/auth";
 import { z } from "zod";
 import {
   insertBookSchema,
@@ -401,6 +403,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating chat completion:", error);
       res.status(500).json({ 
         message: "Failed to generate chat completion", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+
+  // Google Drive Integration Routes
+  
+  // List documents from Google Drive
+  app.get("/api/drive/documents", hasGoogleDriveAccess, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const documents = await GoogleDriveService.listDocuments(user.google_access_token);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error listing documents from Google Drive:", error);
+      res.status(500).json({ 
+        message: "Failed to list documents from Google Drive", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+
+  // Import document from Google Drive
+  app.post("/api/drive/import", hasGoogleDriveAccess, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const { fileId, fileName } = req.body;
+      
+      if (!fileId || !fileName) {
+        return res.status(400).json({ message: "File ID and file name are required" });
+      }
+      
+      // Download the file from Google Drive
+      const filePath = await GoogleDriveService.downloadFile(
+        user.google_access_token, 
+        fileId, 
+        fileName
+      );
+      
+      // Create a book record for the imported file
+      const bookData = insertBookSchema.parse({
+        title: fileName,
+        filename: path.basename(filePath),
+        user_id: user.id,
+        source: "google_drive",
+        drive_file_id: fileId
+      });
+      
+      const book = await storage.createBook(bookData);
+      
+      // Move file from temp directory to uploads directory
+      const uploadDir = path.join(__dirname, "../uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      
+      const destination = path.join(uploadDir, path.basename(filePath));
+      fs.copyFileSync(filePath, destination);
+      
+      // Response with created book
+      res.status(201).json(book);
+    } catch (error) {
+      console.error("Error importing document from Google Drive:", error);
+      res.status(500).json({
+        message: "Failed to import document from Google Drive",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Get user's books
+  app.get("/api/user/books", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      const books = await storage.getBooksByUserId(user.id);
+      res.json(books);
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Failed to fetch user's books", 
         error: error instanceof Error ? error.message : String(error) 
       });
     }
