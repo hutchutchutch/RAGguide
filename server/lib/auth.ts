@@ -254,9 +254,18 @@ export function setupAuth(app: Express) {
     (req: Request, res: Response) => {
       log(`[auth] Authentication successful, redirecting to dashboard...`);
       log(`[auth] User data: ${JSON.stringify(req.user)}`);
+      log(`[auth] Session ID: ${req.sessionID}`);
       
-      // Redirect to the frontend dashboard
-      res.redirect("/");
+      // Make sure the session is properly saved before redirecting
+      // This helps ensure the session cookie is set correctly
+      req.session.save((err) => {
+        if (err) {
+          log(`[auth] Error saving session: ${err.message}`);
+        }
+        
+        // Redirect to the frontend dashboard
+        res.redirect("/");
+      });
     },
     (err: any, req: Request, res: Response, next: NextFunction) => {
       // Error handler

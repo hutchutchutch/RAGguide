@@ -13,6 +13,11 @@ import ws from 'ws';
 neonConfig.webSocketConstructor = ws;
 
 const app = express();
+
+// Trust the proxy to get proper IP and protocol information
+// This is crucial for OAuth to work correctly with custom domains
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -36,6 +41,7 @@ if (process.env.DATABASE_URL) {
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Allow cross-site requests for OAuth flow
     }
   }));
 } else {
@@ -46,6 +52,7 @@ if (process.env.DATABASE_URL) {
     saveUninitialized: false,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      sameSite: 'lax', // Allow cross-site requests for OAuth flow
     }
   }));
 }
