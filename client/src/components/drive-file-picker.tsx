@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +16,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { useAuth } from "@/hooks/use-auth";
 
 interface DriveFile {
   id: string;
@@ -32,29 +32,9 @@ interface DriveFilePickerProps {
 }
 
 export default function DriveFilePicker({ onFileImported }: DriveFilePickerProps) {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoading: authLoading, loginWithGoogle } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
-  // Fetch user data
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("/api/user");
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchUser();
-  }, []);
 
   // Fetch Google Drive documents
   const { 
@@ -98,11 +78,7 @@ export default function DriveFilePicker({ onFileImported }: DriveFilePickerProps
     importMutation.mutate(file);
   };
   
-  const handleLoginWithGoogle = () => {
-    window.location.href = "/auth/google";
-  };
-  
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="flex justify-center items-center p-8">
         <Loader2 className="mr-2 h-8 w-8 animate-spin text-primary" />
@@ -120,7 +96,7 @@ export default function DriveFilePicker({ onFileImported }: DriveFilePickerProps
           <p className="text-muted-foreground mb-4">
             Sign in with your Google account to access your documents from Google Drive.
           </p>
-          <Button onClick={handleLoginWithGoogle} className="gap-2">
+          <Button onClick={loginWithGoogle} className="gap-2">
             <FcGoogle className="h-4 w-4" />
             Sign in with Google
           </Button>

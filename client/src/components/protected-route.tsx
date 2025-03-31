@@ -1,5 +1,5 @@
 import { Redirect, useLocation } from "wouter";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {

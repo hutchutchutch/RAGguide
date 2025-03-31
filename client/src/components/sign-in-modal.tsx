@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { FcGoogle } from "react-icons/fc";
-import { Loader2, Brain } from "lucide-react";
+import { Brain } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 import {
   Dialog,
@@ -17,11 +18,7 @@ interface SignInModalProps {
 }
 
 export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
-  const [, setLocation] = useLocation();
-
-  const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google";
-  };
+  const { loginWithGoogle } = useAuth();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -41,7 +38,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
 
         <div className="mt-6 mb-2">
           <Button
-            onClick={handleGoogleLogin}
+            onClick={loginWithGoogle}
             className="w-full bg-white hover:bg-gray-100 text-black font-medium h-12 text-base"
             size="lg"
           >
