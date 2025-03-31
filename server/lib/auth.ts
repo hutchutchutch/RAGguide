@@ -79,7 +79,11 @@ export function setupAuth(app: Express) {
           clientID: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
           callbackURL: callbackURL,
-          scope: ["profile", "email", "https://www.googleapis.com/auth/drive.readonly"],
+          scope: [
+            "profile", 
+            "email", 
+            "https://www.googleapis.com/auth/drive.file" // More limited scope, access to files created/opened by app
+          ],
         },
         async (accessToken: string, refreshToken: string, profile: any, done: any) => {
           try {
@@ -223,9 +227,26 @@ export function setupAuth(app: Express) {
   
   app.get(
     "/api/auth/google/callback",
-    passport.authenticate("google", { failureRedirect: "/auth" }),
-    (req, res) => {
-      res.redirect("/");
+    passport.authenticate("google", { 
+      failureRedirect: "/auth",
+      failWithError: true 
+    }),
+    (req: Request, res: Response) => {
+      // Get the base URL for the client
+      const baseUrl = process.env.APP_URL || 
+        `https://${process.env.REPL_SLUG}-${process.env.REPL_OWNER}.replit.app`;
+      
+      // Log the redirect
+      const redirectUrl = `${baseUrl}/`;
+      log(`[auth] Redirecting after successful Google OAuth to: ${redirectUrl}`);
+      
+      // Redirect to the client-side dashboard
+      res.redirect(redirectUrl);
+    },
+    (err: any, req: Request, res: Response, next: NextFunction) => {
+      // Error handler
+      console.error("OAuth error:", err);
+      res.redirect("/auth?error=oauth_failed");
     }
   );
 }

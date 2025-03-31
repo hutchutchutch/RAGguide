@@ -45,6 +45,12 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             <FcGoogle className="mr-2 h-5 w-5" />
             Continue with Google
           </Button>
+          
+          <div className="bg-indigo-900/30 border border-indigo-800 rounded-md p-3 mt-4">
+            <p className="text-sm text-gray-300">
+              <span className="font-medium text-indigo-400">Limited access:</span> We only access files you explicitly open or create with our app. You'll be able to choose which documents to share.
+            </p>
+          </div>
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-4">
