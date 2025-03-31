@@ -22,7 +22,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Navigation */}
-      <header className="container mx-auto px-6 py-6 flex justify-between items-center">
+      <header className="container mx-auto px-6 py-6 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-3">
           <Brain className="h-8 w-8 text-indigo-500" />
           <span className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-600">
@@ -39,7 +39,7 @@ export default function Landing() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative container mx-auto px-6 py-24 md:py-32">
+      <section className="relative container mx-auto px-6 py-24 md:py-32 z-5">
         {/* Background Effect */}
         <div className="absolute top-0 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full filter blur-3xl opacity-30" />
         <div className="absolute bottom-0 -right-40 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-30" />
