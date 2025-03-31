@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignInModal from "@/components/sign-in-modal";
-import DeskScene from "@/components/desk-scene";
+import DisplayCards from "@/components/ui/display-cards";
 import {
   ArrowRight,
   BookText,
@@ -44,9 +44,9 @@ export default function Landing() {
         <div className="absolute top-0 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full filter blur-3xl opacity-30" />
         <div className="absolute bottom-0 -right-40 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl opacity-30" />
         
-        {/* 3D Scene */}
-        <div className="absolute inset-0 z-0 opacity-70 transform scale-110 -translate-y-4">
-          <DeskScene />
+        {/* DisplayCards */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center">
+          <DisplayCards />
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto">
