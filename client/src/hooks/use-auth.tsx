@@ -10,6 +10,7 @@ type AuthContextType = {
   error: Error | null;
   logoutMutation: ReturnType<typeof useLogoutMutation>;
   loginWithGoogle: () => void;
+  loginAsTestUser: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -58,6 +59,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     console.log(`Redirecting to Google OAuth: ${baseUrl}/api/auth/google`);
   };
 
+  const loginAsTestUser = async () => {
+    try {
+      const response = await apiRequest("POST", "/api/test-login");
+      queryClient.setQueryData(["/api/user"], response);
+      toast({
+        title: "Logged in as test user",
+        description: "You now have access to all features",
+      });
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: error instanceof Error ? error.message : "Failed to login as test user",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -66,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error,
         logoutMutation,
         loginWithGoogle,
+        loginAsTestUser,
       }}
     >
       {children}

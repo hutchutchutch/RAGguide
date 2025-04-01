@@ -61,6 +61,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
   
+  // Test user login endpoint
+  app.post("/api/test-login", async (req, res) => {
+    try {
+      // Check if test user exists
+      let testUser = await storage.getUserByEmail("test@example.com");
+      
+      // Create test user if it doesn't exist
+      if (!testUser) {
+        testUser = await storage.createUser({
+          username: "Test User",
+          email: "test@example.com",
+          password: null,
+          avatar_url: null,
+          google_id: null,
+          google_access_token: null,
+          google_refresh_token: null,
+        });
+      }
+      
+      // Log the user in
+      req.login(testUser, (err) => {
+        if (err) {
+          return res.status(500).json({ message: "Login failed", error: err.message });
+        }
+        res.json(testUser);
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Test login failed", 
+        error: error instanceof Error ? error.message : String(error) 
+      });
+    }
+  });
+
   // Add a fallback handler for Google OAuth callback to handle any redirect issues
   app.get("/api/auth/google/callback", (req: Request, res: Response) => {
     console.log("Fallback handler for OAuth callback triggered");

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import SignInModal from "@/components/sign-in-modal";
+import { useAuth } from "@/hooks/use-auth";
 import DisplayCards from "@/components/ui/display-cards";
 import {
   ArrowRight,
@@ -18,6 +19,7 @@ import {
 
 export default function Landing() {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const { loginAsTestUser } = useAuth();
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
@@ -29,13 +31,22 @@ export default function Landing() {
             BookRAG
           </span>
         </div>
-        <Button
-          onClick={() => setIsSignInOpen(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 transition duration-300 font-medium"
-          size="lg"
-        >
-          Get Started
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            onClick={loginAsTestUser}
+            className="bg-gray-700 hover:bg-gray-600 transition duration-300 font-medium"
+            size="lg"
+          >
+            Test User
+          </Button>
+          <Button
+            onClick={() => setIsSignInOpen(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 transition duration-300 font-medium"
+            size="lg"
+          >
+            Get Started
+          </Button>
+        </div>
       </header>
 
       {/* Hero Section */}
