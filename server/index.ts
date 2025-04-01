@@ -116,10 +116,50 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+  
+  // Check for the existence of server/public directory
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const url = await import('url');
+    const fileURLToPath = url.fileURLToPath;
+    const dirname = path.dirname;
+    
+    // Using import.meta.url instead of __dirname for ESM modules
+    const currentFilePath = fileURLToPath(import.meta.url);
+    const currentDirPath = dirname(currentFilePath);
+    const publicPath = path.resolve(currentDirPath, 'public');
+    const publicExists = fs.existsSync(publicPath);
+    
+    if (app.get("env") === "development") {
+      try {
+        await setupVite(app, server);
+        log("Vite middleware setup successfully", "vite");
+      } catch (e) {
+        const error = e as Error;
+        log(`Error setting up Vite: ${error.message}`, "vite");
+        
+        // Fallback to serving static files from public directory if Vite fails
+        if (publicExists) {
+          log(`Falling back to static files from ${publicPath}`, "express");
+          app.use(express.static(publicPath));
+          app.get('*', (req, res, next) => {
+            if (req.path.startsWith('/api')) {
+              return next();
+            }
+            res.sendFile(path.resolve(publicPath, 'index.html'), {
+              headers: {
+                'Content-Type': 'text/html'
+              }
+            });
+          });
+        }
+      }
+    } else {
+      serveStatic(app);
+    }
+  } catch (error) {
+    log(`Error setting up static file serving: ${error}`, "express");
   }
 
   // ALWAYS serve the app on port 5000

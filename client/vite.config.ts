@@ -48,10 +48,13 @@ export default defineConfig({
       strict: false
     },
     hmr: {
-      // Configure HMR to work with external server
-      clientPort: 443,
+      // Configure HMR to use secure WebSockets for Replit
       protocol: 'wss',
-      host: '*.replit.dev',
+      host: '0.0.0.0',
+      port: 443,
+      clientPort: 443,
+      // Disable overlay to prevent errors from showing in a modal
+      overlay: false,
     },
     // Set the open flag to false to prevent Vite from opening a browser window
     open: false,
