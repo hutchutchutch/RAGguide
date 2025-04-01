@@ -117,21 +117,82 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   
-  // Setup static file serving for a simplified solution
+  // Setup client access with better prioritization of the Vite dev server
   try {
     const fs = await import('fs');
     const path = await import('path');
     const url = await import('url');
     const fileURLToPath = url.fileURLToPath;
     const dirname = path.dirname;
+    const http = await import('http');
     
     // Using import.meta.url instead of __dirname for ESM modules
     const currentFilePath = fileURLToPath(import.meta.url);
     const currentDirPath = dirname(currentFilePath);
     
-    // Prioritize static directory for direct file serving without WebSockets
+    // Define paths for static files and client 
     const staticPath = path.resolve(currentDirPath, 'static');
+    const clientPath = path.resolve(currentDirPath, '../client');
     
+    // Try to setup Vite middleware for development - FIRST PRIORITY
+    if (app.get("env") === "development") {
+      try {
+        await setupVite(app, server);
+        log("Vite middleware setup successfully", "vite");
+        
+        // Setup proxy to client dev server as a fallback
+        const viteProxyMiddleware = async (req: any, res: any, next: any) => {
+          try {
+            if (req.path.startsWith('/api')) {
+              return next();
+            }
+            
+            // Check if the client dev server is running on port 5173
+            const testClientServer = async () => {
+              return new Promise((resolve) => {
+                const clientReq = http.get('http://localhost:5173/', (clientRes) => {
+                  resolve(clientRes.statusCode === 200);
+                  clientReq.abort();
+                });
+                
+                clientReq.on('error', () => {
+                  resolve(false);
+                });
+                
+                clientReq.setTimeout(500, () => {
+                  clientReq.abort();
+                  resolve(false);
+                });
+              });
+            };
+            
+            const isClientServerRunning = await testClientServer();
+            
+            if (isClientServerRunning) {
+              // Forward the request to the client dev server
+              log(`Proxying request to client dev server: ${req.path}`, "express");
+              res.redirect(`http://localhost:5173${req.path}`);
+              return;
+            }
+            
+            // If no client server is available, continue to next middleware
+            next();
+          } catch (e) {
+            next();
+          }
+        };
+        
+        // Add the proxy middleware
+        app.use(viteProxyMiddleware);
+      } catch (e) {
+        const error = e as Error;
+        log(`Error setting up Vite: ${error.message}`, "vite");
+      }
+    } else {
+      serveStatic(app);
+    }
+    
+    // Static file serving - SECOND PRIORITY
     if (fs.existsSync(staticPath)) {
       log(`Serving static files from ${staticPath}`, "express");
       
@@ -141,34 +202,82 @@ app.use((req, res, next) => {
           res.set('Cache-Control', 'no-store');
         }
       }));
-    }
-    
-    // Try to setup Vite middleware for development
-    if (app.get("env") === "development") {
-      try {
-        await setupVite(app, server);
-        log("Vite middleware setup successfully", "vite");
-      } catch (e) {
-        const error = e as Error;
-        log(`Error setting up Vite: ${error.message}`, "vite");
-        
-        // The fallback static file serving is already set up above
+      
+      // Explicitly serve client static assets folder
+      const clientStaticDir = path.resolve(staticPath, 'client');
+      if (fs.existsSync(clientStaticDir)) {
+        log(`Serving client static directory from ${clientStaticDir}`, "express");
+        app.use('/client-assets', express.static(clientStaticDir, {
+          setHeaders: (res) => {
+            res.set('Cache-Control', 'no-store');
+          }
+        }));
       }
-    } else {
-      serveStatic(app);
     }
     
-    // Add a catch-all route for the client-side SPA
+    // Add a root redirect to the client page
+    app.get('/', (req, res) => {
+      log('Redirecting to /client', "express");
+      res.redirect('/client');
+    });
+    
+    // Add a specific route for the /client path to serve the static client page
+    app.get('/client', (req, res) => {
+      // Try multiple potential locations for the client HTML
+      const locations = [
+        path.resolve(staticPath, 'client/index.html'),
+        path.resolve('server/public/index.html'),
+        path.resolve('client/index.html')
+      ];
+      
+      // Log all location attempts
+      console.log('Attempting to serve client from these locations:');
+      locations.forEach(loc => console.log(' - ' + loc + ' exists: ' + fs.existsSync(loc)));
+      
+      // Find the first location that exists
+      const clientStaticPath = locations.find(loc => fs.existsSync(loc));
+      
+      if (clientStaticPath) {
+        log(`Serving static client from: ${clientStaticPath}`, "express");
+        
+        // Set headers for no caching
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        
+        // Send the file
+        res.sendFile(clientStaticPath);
+      } else {
+        console.error('Client page not found in any location');
+        res.status(404).send('Client page not found - tried all potential locations');
+      }
+    });
+    
+    // Add a catch-all route for the client-side SPA - THIRD PRIORITY
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api')) {
         return next();
       }
       
-      const indexPath = path.resolve(staticPath, 'index.html');
-      if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath, {
+      // First try Vite client index.html
+      const clientIndexPath = path.resolve(clientPath, 'index.html');
+      const staticIndexPath = path.resolve(staticPath, 'index.html');
+      
+      if (fs.existsSync(clientIndexPath)) {
+        log(`Serving client index.html: ${clientIndexPath}`, "express");
+        res.sendFile(clientIndexPath, {
           headers: {
-            'Content-Type': 'text/html'
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-store'
+          }
+        });
+      } else if (fs.existsSync(staticIndexPath)) {
+        log(`Serving static index.html: ${staticIndexPath}`, "express");
+        res.sendFile(staticIndexPath, {
+          headers: {
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-store'
           }
         });
       } else {

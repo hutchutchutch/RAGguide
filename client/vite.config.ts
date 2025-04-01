@@ -53,8 +53,12 @@ export default defineConfig({
       allow: ['..'],
       strict: false
     },
-    // Completely disable HMR for Replit environment
-    hmr: false,
+    // Enable HMR with proper configuration for Replit
+    hmr: {
+      clientPort: 5000, // Users access through this port on Replit
+      port: 5173, // The internal Vite port
+      host: process.env.REPL_SLUG ? `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : 'localhost',
+    },
     // Set the open flag to false to prevent Vite from opening a browser window
     open: false,
     // Add allowedHosts to enable external access
