@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style data-vite-theme="" data-inject-first="">:root {
+    --background: 217 99% 80%;
+--foreground: 238 100% 16%;
+--muted: 217 94% 69%;
+--muted-foreground: 238 100% 16%;
+--popover: 217 100% 99%;
+--popover-foreground: 238 100% 16%;
+--card: 217 100% 99%;
+--card-foreground: 238 100% 16%;
+--border: 217 94% 69%;
+--input: 217 94% 69%;
+--primary: 217 100% 69%;
+--primary-foreground: 217 100% 99%;
+--secondary: 217 100% 86%;
+--secondary-foreground: 238 100% 16%;
+--accent: 217 100% 86%;
+--accent-foreground: 238 100% 16%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 60 9.1% 97.8%;
+--ring: 217 100% 69%;
+--radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+      --background: 244 100% 1%;
+--foreground: 217 100% 96%;
+--muted: 216 88% 31%;
+--muted-foreground: 217 100% 96%;
+--popover: 220 99% 11%;
+--popover-foreground: 217 100% 96%;
+--card: 220 99% 11%;
+--card-foreground: 217 100% 96%;
+--border: 216 88% 31%;
+--input: 216 88% 31%;
+--primary: 217 91% 57%;
+--primary-foreground: 217 100% 99%;
+--secondary: 216 88% 31%;
+--secondary-foreground: 217 100% 96%;
+--accent: 216 88% 31%;
+--accent-foreground: 217 100% 96%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--ring: 217 91% 57%;
+--radius: 0.5rem;
+  }
+}
+.light {
+    --background: 217 99% 80%;
+--foreground: 238 100% 16%;
+--muted: 217 94% 69%;
+--muted-foreground: 238 100% 16%;
+--popover: 217 100% 99%;
+--popover-foreground: 238 100% 16%;
+--card: 217 100% 99%;
+--card-foreground: 238 100% 16%;
+--border: 217 94% 69%;
+--input: 217 94% 69%;
+--primary: 217 100% 69%;
+--primary-foreground: 217 100% 99%;
+--secondary: 217 100% 86%;
+--secondary-foreground: 238 100% 16%;
+--accent: 217 100% 86%;
+--accent-foreground: 238 100% 16%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 60 9.1% 97.8%;
+--ring: 217 100% 69%;
+--radius: 0.5rem;
+}
+.dark {
+    --background: 244 100% 1%;
+--foreground: 217 100% 96%;
+--muted: 216 88% 31%;
+--muted-foreground: 217 100% 96%;
+--popover: 220 99% 11%;
+--popover-foreground: 217 100% 96%;
+--card: 220 99% 11%;
+--card-foreground: 217 100% 96%;
+--border: 216 88% 31%;
+--input: 216 88% 31%;
+--primary: 217 91% 57%;
+--primary-foreground: 217 100% 99%;
+--secondary: 216 88% 31%;
+--secondary-foreground: 217 100% 96%;
+--accent: 216 88% 31%;
+--accent-foreground: 217 100% 96%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--ring: 217 91% 57%;
+--radius: 0.5rem;
+}</style>
+
+    <script type="module">
+import { createHotContext } from "/@vite/client";
+const hot = createHotContext("/__dummy__runtime-error-plugin");
+
+function sendError(error) {
+  if (!(error instanceof Error)) {
+    error = new Error("(unknown runtime error)");
+  }
+  const serialized = {
+    message: error.message,
+    stack: error.stack,
+  };
+  hot.send("runtime-error-plugin:error", serialized);
+}
+
+window.addEventListener("error", (evt) => {
+  sendError(evt.error);
+});
+
+window.addEventListener("unhandledrejection", (evt) => {
+  sendError(evt.reason);
+});
+</script>
+
+    <script type="module">
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+
+    <script type="module" src="/@vite/client"></script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>RAG Explorer | Interactive Book Analysis</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

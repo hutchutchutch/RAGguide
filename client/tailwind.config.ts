@@ -5,7 +5,8 @@ export default {
   content: [
     "./index.html", 
     "./src/**/*.{js,jsx,ts,tsx}",
-    "./src/components/**/*.{js,ts,jsx,tsx}"
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {

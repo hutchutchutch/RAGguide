@@ -48,19 +48,14 @@ export default defineConfig({
       strict: false
     },
     hmr: {
-      // Using in-memory HMR server without relying on WebSockets
-      server: false, // Disable WebSocket server
-      overlay: false, // Disable error overlay to prevent connection errors
+      // Configure HMR to work with external server
+      clientPort: 443,
+      protocol: 'wss',
+      host: '*.replit.dev',
     },
     // Set the open flag to false to prevent Vite from opening a browser window
     open: false,
     // Add allowedHosts to enable external access
-    allowedHosts: [
-      'localhost',
-      '*.replit.dev',
-      '*.repl.co',
-      '*.replit.app',
-      'ce63078d-8f4c-407a-8675-a2dd392b4e50-00-1d1n9u6e7evt7.spock.replit.dev'
-    ],
+    allowedHosts: ['all', 'localhost', '*.replit.dev', '*.repl.co', '*.replit.app', '*.spock.replit.dev', '0.0.0.0', '*.repl.run', 'ce63078d-8f4c-407a-8675-a2dd392b4e50-00-1d1n9u6e7evt7.spock.replit.dev'],
   },
 });
