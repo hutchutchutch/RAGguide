@@ -34,6 +34,12 @@ export default defineConfig({
   build: {
     outDir: path.resolve(rootDir, "dist/public"),
     emptyOutDir: true,
+    // Add source maps for better debugging
+    sourcemap: true,
+    // Ensure assets are properly hashed
+    assetsInlineLimit: 4096,
+    // Default for production builds, being explicit
+    minify: true,
   },
   server: {
     host: '0.0.0.0', // Listen on all addresses
@@ -47,15 +53,8 @@ export default defineConfig({
       allow: ['..'],
       strict: false
     },
-    hmr: {
-      // Configure HMR to use secure WebSockets for Replit
-      protocol: 'wss',
-      host: '0.0.0.0',
-      port: 443,
-      clientPort: 443,
-      // Disable overlay to prevent errors from showing in a modal
-      overlay: false,
-    },
+    // Completely disable HMR for Replit environment
+    hmr: false,
     // Set the open flag to false to prevent Vite from opening a browser window
     open: false,
     // Add allowedHosts to enable external access

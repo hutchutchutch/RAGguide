@@ -58,6 +58,15 @@ const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : 'Unknown error occurred';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Add a health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    });
+  });
+  
   // Setup authentication
   setupAuth(app);
   

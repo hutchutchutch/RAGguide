@@ -117,7 +117,7 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   
-  // Check for the existence of server/public directory
+  // Setup static file serving for a simplified solution
   try {
     const fs = await import('fs');
     const path = await import('path');
@@ -128,9 +128,22 @@ app.use((req, res, next) => {
     // Using import.meta.url instead of __dirname for ESM modules
     const currentFilePath = fileURLToPath(import.meta.url);
     const currentDirPath = dirname(currentFilePath);
-    const publicPath = path.resolve(currentDirPath, 'public');
-    const publicExists = fs.existsSync(publicPath);
     
+    // Prioritize static directory for direct file serving without WebSockets
+    const staticPath = path.resolve(currentDirPath, 'static');
+    
+    if (fs.existsSync(staticPath)) {
+      log(`Serving static files from ${staticPath}`, "express");
+      
+      // Serve static files
+      app.use(express.static(staticPath, {
+        setHeaders: (res) => {
+          res.set('Cache-Control', 'no-store');
+        }
+      }));
+    }
+    
+    // Try to setup Vite middleware for development
     if (app.get("env") === "development") {
       try {
         await setupVite(app, server);
@@ -139,25 +152,30 @@ app.use((req, res, next) => {
         const error = e as Error;
         log(`Error setting up Vite: ${error.message}`, "vite");
         
-        // Fallback to serving static files from public directory if Vite fails
-        if (publicExists) {
-          log(`Falling back to static files from ${publicPath}`, "express");
-          app.use(express.static(publicPath));
-          app.get('*', (req, res, next) => {
-            if (req.path.startsWith('/api')) {
-              return next();
-            }
-            res.sendFile(path.resolve(publicPath, 'index.html'), {
-              headers: {
-                'Content-Type': 'text/html'
-              }
-            });
-          });
-        }
+        // The fallback static file serving is already set up above
       }
     } else {
       serveStatic(app);
     }
+    
+    // Add a catch-all route for the client-side SPA
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api')) {
+        return next();
+      }
+      
+      const indexPath = path.resolve(staticPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath, {
+          headers: {
+            'Content-Type': 'text/html'
+          }
+        });
+      } else {
+        next();
+      }
+    });
+    
   } catch (error) {
     log(`Error setting up static file serving: ${error}`, "express");
   }
