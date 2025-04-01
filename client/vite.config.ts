@@ -28,6 +28,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
       "@shared": path.resolve(rootDir, "shared"),
+      "@server": path.resolve(rootDir, "server"),
       "@assets": path.resolve(rootDir, "attached_assets"),
     },
   },
