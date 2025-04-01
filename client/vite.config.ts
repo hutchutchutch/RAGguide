@@ -55,9 +55,15 @@ export default defineConfig({
     },
     // Enable HMR with proper configuration for Replit
     hmr: {
-      clientPort: 5000, // Users access through this port on Replit
+      clientPort: 443, // Replit proxy port (HTTPS)
       port: 5173, // The internal Vite port
-      host: process.env.REPL_SLUG ? `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co` : 'localhost',
+      // Use protocol-relative URL to support both http and https
+      protocol: 'ws',
+      // We want to accept connections to our Replit domain and local testing
+      host: 'localhost',
+      // Make sure HMR stays enabled
+      timeout: 60000,
+      overlay: true,
     },
     // Set the open flag to false to prevent Vite from opening a browser window
     open: false,

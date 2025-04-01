@@ -215,10 +215,18 @@ app.use((req, res, next) => {
       }
     }
     
-    // Add a root redirect to the client page
+    // Add a root redirect to access the React app directly
     app.get('/', (req, res) => {
-      log('Redirecting to /client', "express");
-      res.redirect('/client');
+      log('Accessing root path - serving React app', "express");
+      
+      // Forward to either the React dev server or a static file
+      if (process.env.NODE_ENV === 'development') {
+        // In development, redirect to the Vite dev server
+        res.redirect('http://localhost:5173/');
+      } else {
+        // In production or if Vite dev server is not available, serve our static page
+        res.redirect('/client');
+      }
     });
     
     // Add a specific route for the /client path to serve the static client page
