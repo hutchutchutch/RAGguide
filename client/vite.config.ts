@@ -13,9 +13,7 @@ export default defineConfig({
   plugins: [
     react(),
     runtimeErrorOverlay(),
-    themePlugin({
-      theme: path.resolve(__dirname, 'theme.json')
-    }),
+    themePlugin(), // Using default theme path (root/theme.json)
     // Cartographer plugin disabled due to compatibility issues
     // ...(process.env.NODE_ENV !== "production" &&
     // process.env.REPL_ID !== undefined
@@ -38,23 +36,25 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    host: true, // Listen on all addresses and enable access from other devices
-    hmr: {
-      host: process.env.REPL_SLUG ? `${process.env.REPL_SLUG}.replit.dev` : undefined,
-      clientPort: 443, // Use the HTTPS port for websocket connections
-      protocol: 'wss'
-    },
+    host: '0.0.0.0', // Listen on all addresses
+    port: 5173,
+    strictPort: true,
+    cors: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
-    cors: true,
-    strictPort: true,
-    port: 5173,
     fs: {
       allow: ['..'],
       strict: false
     },
-    origin: 'https://ce63078d-8f4c-407a-8675-a2dd392b4e50-00-1d1n9u6e7evt7.spock.replit.dev',
+    hmr: {
+      // Using in-memory HMR server without relying on WebSockets
+      server: false, // Disable WebSocket server
+      overlay: false, // Disable error overlay to prevent connection errors
+    },
+    // Set the open flag to false to prevent Vite from opening a browser window
+    open: false,
+    // Add allowedHosts to enable external access
     allowedHosts: [
       'localhost',
       '*.replit.dev',
