@@ -21,5 +21,15 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
+    "@replit/vite-plugin-shadcn-theme-json": "^0.0.4",
+    "@tailwindcss/typography": "^0.5.16",
+    "@vitejs/plugin-react": "^4.3.4",
+    "drizzle-kit": "^0.30.6",
+    "tailwindcss": "^4.1.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vite": "^6.2.4"
   }
 }

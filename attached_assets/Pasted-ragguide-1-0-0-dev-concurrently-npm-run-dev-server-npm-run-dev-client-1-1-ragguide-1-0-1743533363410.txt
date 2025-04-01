@@ -1,0 +1,148 @@
+ragguide@1.0.0 dev
+> concurrently "npm run dev:server" "npm run dev:client"
+
+[1] 
+[1] > ragguide@1.0.0 dev:client
+[1] > cd client && npm run dev
+[1] 
+[0] 
+[0] > ragguide@1.0.0 dev:server
+[0] > cd server && npm run dev
+[0] 
+[1] 
+[1] > ragguide-client@1.0.0 dev
+[1] > vite
+[1] 
+[0] 
+[0] > ragguide-server@1.0.0 dev
+[0] > tsx index.ts
+[0] 
+[1] 
+[1]   VITE v5.4.16  ready in 443 ms
+[1] 
+[1]   ➜  Local:   http://localhost:5173/
+[1]   ➜  Network: use --host to expose
+[0] 6:48:34 PM [auth] PostgreSQL session store initialized
+[0] 6:48:36 PM [express] [auth] Using Google OAuth callback URL: https://rag.guide/api/auth/google/callback
+[0] Initializing database...
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42710',
+[0]   message: 'extension "vector" already exists, skipping',
+[0]   file: 'extension.c',
+[0]   line: '1825',
+[0]   routine: 'CreateExtension'
+[0] }
+[0] Vector extension enabled
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "books" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "embedding_settings" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "chunks" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "chat_sessions" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "chat_chunks" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "llm_prompts" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "nodes" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "edges" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "node_chunks" already exists, skipping',
+[0]   file: 'parse_utilcmd.c',
+[0]   line: '207',
+[0]   routine: 'transformCreateStmt'
+[0] }
+[0] {
+[0]   severity_local: 'NOTICE',
+[0]   severity: 'NOTICE',
+[0]   code: '42P07',
+[0]   message: 'relation "idx_chunks_embedding_vector" already exists, skipping',
+[0]   file: 'index.c',
+[0]   line: '877',
+[0]   routine: 'index_create'
+[0] }
+[0] Database initialized successfully
+[0] 6:48:37 PM [db] Database initialized successfully
+[0] 6:48:37 PM [express] [auth] Using Google OAuth callback URL: https://rag.guide/api/auth/google/callback
+[0] Error importing vite: Error: Vite imported but createServer not found
+[0]     at setupVite (/home/runner/workspace/server/vite.ts:33:15)
+[0]     at async <anonymous> (/home/runner/workspace/server/index.ts:120:5)
+[0] Failed to set up Vite dev server: Error: Failed to read theme file: ENOENT: no such file or directory, open './theme.json'
+[0]     at PluginContext._formatLog (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-DrOo5SEf.js:47867:41)
+[0]     at PluginContext.error (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-DrOo5SEf.js:47864:16)
+[0]     at PluginContext.buildStart (/home/runner/workspace/node_modules/@replit/vite-plugin-shadcn-theme-json/src/index.ts:38:14)
+[0]     at async Promise.all (index 5)
+[0]     at async EnvironmentPluginContainer.hookParallel (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-DrOo5SEf.js:47533:5)
+[0]     at async EnvironmentPluginContainer.buildStart (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-DrOo5SEf.js:47552:5)
+[0]     at async <anonymous> (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-DrOo5SEf.js:44245:7)
+[0]     at async _createServer (/home/runner/workspace/node_modules/vite/dist/node/chunks/dep-DrOo5SEf.js:44268:5)
+[0]     at async setupVite (/home/runner/workspace/server/vite.ts:47:24)
+[0]     at async <anonymous> (/home/runner/workspace/server/index.ts:120:5) {
+[0]   plugin: 'vite-plugin-theme'
+[0] }
+[0] Falling back to static file serving from client directory
+[0] 6:48:38 PM [express] serving on port 5000
