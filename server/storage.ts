@@ -126,12 +126,14 @@ export class MemStorage implements IStorage {
   async createUser(user: InsertUser): Promise<User> {
     const id = uuidv4();
     const newUser: User = {
-      ...user,
       id,
-      avatar_url: user.avatar_url || null,
-      google_id: user.google_id || null,
-      google_access_token: user.google_access_token || null,
-      google_refresh_token: user.google_refresh_token || null,
+      username: user.username,
+      email: user.email,
+      password: user.password ?? null,
+      avatar_url: user.avatar_url ?? null,
+      google_id: user.google_id ?? null,
+      google_access_token: user.google_access_token ?? null,
+      google_refresh_token: user.google_refresh_token ?? null,
       created_at: new Date(),
       last_login: new Date(),
     };
@@ -297,8 +299,11 @@ export class MemStorage implements IStorage {
   async createLlmPrompt(prompt: InsertLlmPrompt): Promise<LlmPrompt> {
     const id = uuidv4();
     const newPrompt: LlmPrompt = {
-      ...prompt,
       id,
+      chat_id: prompt.chat_id,
+      system_prompt: prompt.system_prompt,
+      context_chunks: Array.isArray(prompt.context_chunks) ? prompt.context_chunks : [prompt.context_chunks],
+      final_prompt: prompt.final_prompt,
     };
     this.llmPrompts.set(id, newPrompt);
     return newPrompt;

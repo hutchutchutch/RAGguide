@@ -23,7 +23,7 @@ export async function runMigrations() {
     const db = drizzle(migrationClient);
     
     // Auto-generate migrations
-    const migrationsFolder = path.join(__dirname, '../migrations');
+    const migrationsFolder = path.join(__dirname, '../../migrations');
     
     // Push schema to database directly (for demo purposes)
     for (const table of Object.values(schema)) {

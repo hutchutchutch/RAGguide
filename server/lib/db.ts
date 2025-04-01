@@ -6,21 +6,41 @@ import { createVectorIndexSQL } from './pgvector';
 // Check if database URL is available
 if (!process.env.DATABASE_URL) {
   console.error('DATABASE_URL environment variable is not set');
-  process.exit(1);
+  // In development, we'll continue with a warning instead of exiting
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 }
 
-// Create postgres connection
-const connectionString = process.env.DATABASE_URL;
-const queryClient = postgres(connectionString, { 
-  max: 10,
-  connect_timeout: 10
-});
+// Create postgres connection if the URL is available
+let queryClient: postgres.Sql | null = null;
+let db: ReturnType<typeof drizzle> | null = null;
 
-// Create drizzle client
-export const db = drizzle(queryClient, { schema });
+if (process.env.DATABASE_URL) {
+  try {
+    queryClient = postgres(process.env.DATABASE_URL, { 
+      max: 10,
+      connect_timeout: 10
+    });
+    
+    // Create drizzle client
+    db = drizzle(queryClient, { schema });
+  } catch (error) {
+    console.error('Error connecting to database:', error);
+    queryClient = null;
+    db = null;
+  }
+}
+
+export { db };
 
 // Initialize database function
 export async function initializeDatabase() {
+  if (!queryClient) {
+    console.log('Database client not available, skipping initialization');
+    return;
+  }
+  
   try {
     console.log('Initializing database...');
     
@@ -138,16 +158,26 @@ export async function findSimilarChunks(
   limit: number = 5,
   threshold: number = 0.7
 ): Promise<schema.Chunk[]> {
-  // SQL query using the cosine similarity operator (<=>)
-  const result = await queryClient.unsafe<schema.Chunk[]>(
-    `SELECT * FROM chunks 
-     WHERE book_id = $1 
-     AND embedding_settings_id = $2
-     AND embedding_vector <=> $3 < ${1 - threshold}
-     ORDER BY embedding_vector <=> $3
-     LIMIT $4`,
-    [bookId, settingsId, `[${embeddingVector.join(',')}]`, limit]
-  );
+  if (!queryClient) {
+    console.warn('Database client not available, returning empty results');
+    return [];
+  }
   
-  return result;
+  try {
+    // SQL query using the cosine similarity operator (<=>)
+    const result = await queryClient.unsafe<schema.Chunk[]>(
+      `SELECT * FROM chunks 
+       WHERE book_id = $1 
+       AND embedding_settings_id = $2
+       AND embedding_vector <=> $3 < ${1 - threshold}
+       ORDER BY embedding_vector <=> $3
+       LIMIT $4`,
+      [bookId, settingsId, `[${embeddingVector.join(',')}]`, limit]
+    );
+    
+    return result;
+  } catch (error) {
+    console.error('Error searching for similar chunks:', error);
+    return [];
+  }
 }

@@ -1,7 +1,30 @@
 import { pgTable, text, serial, integer, timestamp, uuid, real, primaryKey, json, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { vector } from "../server/lib/pgvector";
+
+// Custom vector implementation for compatibility
+import { customType } from 'drizzle-orm/pg-core';
+
+export const vector = customType<{
+  data: number[];
+  driverData: string;
+  config: {
+    dimensions: number;
+  };
+}>({
+  dataType(config) {
+    if (!config?.dimensions) {
+      throw new Error('Vector dimensions must be specified');
+    }
+    return `vector(${config.dimensions})`;
+  },
+  fromDriver(value: string): number[] {
+    if (typeof value !== 'string') {
+      return [];
+    }
+    return value.slice(1, -1).split(',').map(Number);
+  },
+});
 
 // Users table for authentication
 export const users = pgTable("users", {

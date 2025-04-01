@@ -53,6 +53,10 @@ const upload = multer({
   },
 });
 
+// Helper function for error handling
+const getErrorMessage = (error: unknown): string => 
+  error instanceof Error ? error.message : 'Unknown error occurred';
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
@@ -68,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const books = await storage.getBooks();
       res.json(books);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch books", error: error.message });
+      res.status(500).json({ message: "Failed to fetch books", error: getErrorMessage(error) });
     }
   });
 
@@ -80,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(book);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch book", error: error.message });
+      res.status(500).json({ message: "Failed to fetch book", error: getErrorMessage(error) });
     }
   });
 
@@ -98,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const book = await storage.createBook(bookData);
       res.status(201).json(book);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create book", error: error.message });
+      res.status(400).json({ message: "Failed to create book", error: getErrorMessage(error) });
     }
   });
 
@@ -108,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const settings = await storage.getEmbeddingSettings();
       res.json(settings);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch embedding settings", error: error.message });
+      res.status(500).json({ message: "Failed to fetch embedding settings", error: getErrorMessage(error) });
     }
   });
   
@@ -123,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(settings);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch embedding settings", error: error.message });
+      res.status(500).json({ message: "Failed to fetch embedding settings", error: getErrorMessage(error) });
     }
   });
   
@@ -133,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const settings = await storage.createEmbeddingSettings(settingsData);
       res.status(201).json(settings);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create embedding settings", error: error.message });
+      res.status(400).json({ message: "Failed to create embedding settings", error: getErrorMessage(error) });
     }
   });
   
@@ -154,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedSettings);
     } catch (error) {
-      res.status(400).json({ message: "Failed to rate embedding settings", error: error.message });
+      res.status(400).json({ message: "Failed to rate embedding settings", error: getErrorMessage(error) });
     }
   });
 
@@ -171,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chunks = await storage.getChunks(bookId, settingsId);
       res.json(chunks);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch chunks", error: error.message });
+      res.status(500).json({ message: "Failed to fetch chunks", error: getErrorMessage(error) });
     }
   });
 
@@ -181,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chunk = await storage.createChunk(chunkData);
       res.status(201).json(chunk);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create chunk", error: error.message });
+      res.status(400).json({ message: "Failed to create chunk", error: getErrorMessage(error) });
     }
   });
 
@@ -191,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chunks = await storage.createChunks(chunksData);
       res.status(201).json(chunks);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create chunks", error: error.message });
+      res.status(400).json({ message: "Failed to create chunks", error: getErrorMessage(error) });
     }
   });
 
@@ -202,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chatSessions = await storage.getChatSessions(bookId);
       res.json(chatSessions);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch chat sessions", error: error.message });
+      res.status(500).json({ message: "Failed to fetch chat sessions", error: getErrorMessage(error) });
     }
   });
 
@@ -212,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const session = await storage.createChatSession(sessionData);
       res.status(201).json(session);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create chat session", error: error.message });
+      res.status(400).json({ message: "Failed to create chat session", error: getErrorMessage(error) });
     }
   });
 
@@ -235,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(fullChunks);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch chat chunks", error: error.message });
+      res.status(500).json({ message: "Failed to fetch chat chunks", error: getErrorMessage(error) });
     }
   });
 
@@ -245,7 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const chatChunk = await storage.createChatChunk(chatChunkData);
       res.status(201).json(chatChunk);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create chat chunk", error: error.message });
+      res.status(400).json({ message: "Failed to create chat chunk", error: getErrorMessage(error) });
     }
   });
 
@@ -261,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(prompt);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch LLM prompt", error: error.message });
+      res.status(500).json({ message: "Failed to fetch LLM prompt", error: getErrorMessage(error) });
     }
   });
 
@@ -271,7 +275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const prompt = await storage.createLlmPrompt(promptData);
       res.status(201).json(prompt);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create LLM prompt", error: error.message });
+      res.status(400).json({ message: "Failed to create LLM prompt", error: getErrorMessage(error) });
     }
   });
 
@@ -282,7 +286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const nodes = await storage.getNodes(bookId);
       res.json(nodes);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch nodes", error: error.message });
+      res.status(500).json({ message: "Failed to fetch nodes", error: getErrorMessage(error) });
     }
   });
 
@@ -292,7 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const node = await storage.createNode(nodeData);
       res.status(201).json(node);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create node", error: error.message });
+      res.status(400).json({ message: "Failed to create node", error: getErrorMessage(error) });
     }
   });
 
@@ -302,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const edges = await storage.getEdges(bookId);
       res.json(edges);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch edges", error: error.message });
+      res.status(500).json({ message: "Failed to fetch edges", error: getErrorMessage(error) });
     }
   });
 
@@ -312,7 +316,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const edge = await storage.createEdge(edgeData);
       res.status(201).json(edge);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create edge", error: error.message });
+      res.status(400).json({ message: "Failed to create edge", error: getErrorMessage(error) });
     }
   });
 
@@ -335,7 +339,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(fullChunks);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch node chunks", error: error.message });
+      res.status(500).json({ message: "Failed to fetch node chunks", error: getErrorMessage(error) });
     }
   });
 
@@ -345,7 +349,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const nodeChunk = await storage.createNodeChunk(nodeChunkData);
       res.status(201).json(nodeChunk);
     } catch (error) {
-      res.status(400).json({ message: "Failed to create node chunk", error: error.message });
+      res.status(400).json({ message: "Failed to create node chunk", error: getErrorMessage(error) });
     }
   });
 
@@ -361,7 +365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         edges,
       });
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch knowledge graph", error: error.message });
+      res.status(500).json({ message: "Failed to fetch knowledge graph", error: getErrorMessage(error) });
     }
   });
 
@@ -386,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating embeddings:", error);
       res.status(500).json({ 
         message: "Failed to generate embeddings", 
-        error: error instanceof Error ? error.message : String(error) 
+        error: getErrorMessage(error) 
       });
     }
   });
@@ -411,7 +415,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating chat completion:", error);
       res.status(500).json({ 
         message: "Failed to generate chat completion", 
-        error: error instanceof Error ? error.message : String(error) 
+        error: getErrorMessage(error) 
       });
     }
   });
@@ -428,7 +432,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error listing documents from Google Drive:", error);
       res.status(500).json({ 
         message: "Failed to list documents from Google Drive", 
-        error: error instanceof Error ? error.message : String(error) 
+        error: getErrorMessage(error) 
       });
     }
   });
@@ -476,7 +480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error importing document from Google Drive:", error);
       res.status(500).json({
         message: "Failed to import document from Google Drive",
-        error: error instanceof Error ? error.message : String(error)
+        error: getErrorMessage(error)
       });
     }
   });
@@ -490,7 +494,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ 
         message: "Failed to fetch user's books", 
-        error: error instanceof Error ? error.message : String(error) 
+        error: getErrorMessage(error) 
       });
     }
   });

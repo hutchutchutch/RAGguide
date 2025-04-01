@@ -43,33 +43,39 @@ export class PgStorage implements IStorage {
     
     log('PostgreSQL session store initialized', 'auth');
   }
+
+  private get dbOrThrow() {
+    if (!db) throw new Error('Database not initialized');
+    return db;
+  }
+
   // User operations
   async getUsers(): Promise<User[]> {
-    return await db.select().from(schema.users);
+    return await this.dbOrThrow.select().from(schema.users);
   }
 
   async getUserById(id: string): Promise<User | undefined> {
-    const results = await db.select().from(schema.users).where(eq(schema.users.id, id));
+    const results = await this.dbOrThrow.select().from(schema.users).where(eq(schema.users.id, id));
     return results[0];
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const results = await db.select().from(schema.users).where(eq(schema.users.email, email));
+    const results = await this.dbOrThrow.select().from(schema.users).where(eq(schema.users.email, email));
     return results[0];
   }
 
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
-    const results = await db.select().from(schema.users).where(eq(schema.users.google_id, googleId));
+    const results = await this.dbOrThrow.select().from(schema.users).where(eq(schema.users.google_id, googleId));
     return results[0];
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const results = await db.insert(schema.users).values(user).returning();
+    const results = await this.dbOrThrow.insert(schema.users).values(user).returning();
     return results[0];
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
-    const results = await db.update(schema.users)
+    const results = await this.dbOrThrow.update(schema.users)
       .set(updates)
       .where(eq(schema.users.id, id))
       .returning();
@@ -83,40 +89,40 @@ export class PgStorage implements IStorage {
 
   // Book operations
   async getBooks(): Promise<Book[]> {
-    return await db.select().from(schema.books);
+    return await this.dbOrThrow.select().from(schema.books);
   }
 
   async getBooksByUserId(userId: string): Promise<Book[]> {
-    return await db.select().from(schema.books).where(eq(schema.books.user_id, userId));
+    return await this.dbOrThrow.select().from(schema.books).where(eq(schema.books.user_id, userId));
   }
 
   async getBook(id: string): Promise<Book | undefined> {
-    const results = await db.select().from(schema.books).where(eq(schema.books.id, id));
+    const results = await this.dbOrThrow.select().from(schema.books).where(eq(schema.books.id, id));
     return results[0];
   }
 
   async createBook(book: InsertBook): Promise<Book> {
-    const results = await db.insert(schema.books).values(book).returning();
+    const results = await this.dbOrThrow.insert(schema.books).values(book).returning();
     return results[0];
   }
 
   // Embedding settings operations
   async getEmbeddingSettings(): Promise<EmbeddingSettings[]> {
-    return await db.select().from(schema.embeddingSettings);
+    return await this.dbOrThrow.select().from(schema.embeddingSettings);
   }
   
   async getEmbeddingSettingsById(id: string): Promise<EmbeddingSettings | undefined> {
-    const results = await db.select().from(schema.embeddingSettings).where(eq(schema.embeddingSettings.id, id));
+    const results = await this.dbOrThrow.select().from(schema.embeddingSettings).where(eq(schema.embeddingSettings.id, id));
     return results[0];
   }
 
   async createEmbeddingSettings(settings: InsertEmbeddingSettings): Promise<EmbeddingSettings> {
-    const results = await db.insert(schema.embeddingSettings).values(settings).returning();
+    const results = await this.dbOrThrow.insert(schema.embeddingSettings).values(settings).returning();
     return results[0];
   }
   
   async updateEmbeddingSettings(id: string, updates: Partial<EmbeddingSettings>): Promise<EmbeddingSettings> {
-    const results = await db
+    const results = await this.dbOrThrow
       .update(schema.embeddingSettings)
       .set(updates)
       .where(eq(schema.embeddingSettings.id, id))
@@ -131,7 +137,7 @@ export class PgStorage implements IStorage {
 
   // Chunk operations
   async getChunks(bookId: string, settingsId: string): Promise<Chunk[]> {
-    return await db.select().from(schema.chunks).where(
+    return await this.dbOrThrow.select().from(schema.chunks).where(
       and(
         eq(schema.chunks.book_id, bookId),
         eq(schema.chunks.embedding_settings_id, settingsId)
@@ -140,7 +146,7 @@ export class PgStorage implements IStorage {
   }
 
   async getChunk(id: string): Promise<Chunk | undefined> {
-    const results = await db.select().from(schema.chunks).where(eq(schema.chunks.id, id));
+    const results = await this.dbOrThrow.select().from(schema.chunks).where(eq(schema.chunks.id, id));
     return results[0];
   }
 
@@ -149,7 +155,7 @@ export class PgStorage implements IStorage {
     const embeddingArray = JSON.parse(chunk.embedding);
     
     // Insert with both the text embedding and the vector embedding
-    const results = await db.insert(schema.chunks).values({
+    const results = await this.dbOrThrow.insert(schema.chunks).values({
       ...chunk,
       embedding_vector: embeddingArray
     }).returning();
@@ -169,65 +175,74 @@ export class PgStorage implements IStorage {
       };
     });
     
-    const results = await db.insert(schema.chunks).values(chunksWithVectors).returning();
+    const results = await this.dbOrThrow.insert(schema.chunks).values(chunksWithVectors).returning();
     return results;
   }
 
   // Chat session operations
   async getChatSessions(bookId: string): Promise<ChatSession[]> {
-    return await db.select().from(schema.chatSessions).where(eq(schema.chatSessions.book_id, bookId));
+    return await this.dbOrThrow.select().from(schema.chatSessions).where(eq(schema.chatSessions.book_id, bookId));
   }
 
   async getChatSession(id: string): Promise<ChatSession | undefined> {
-    const results = await db.select().from(schema.chatSessions).where(eq(schema.chatSessions.id, id));
+    const results = await this.dbOrThrow.select().from(schema.chatSessions).where(eq(schema.chatSessions.id, id));
     return results[0];
   }
 
   async createChatSession(session: InsertChatSession): Promise<ChatSession> {
-    const results = await db.insert(schema.chatSessions).values(session).returning();
+    const results = await this.dbOrThrow.insert(schema.chatSessions).values(session).returning();
     return results[0];
   }
 
   // Chat chunk operations
   async getChatChunks(chatId: string): Promise<ChatChunk[]> {
-    return await db.select().from(schema.chatChunks).where(eq(schema.chatChunks.chat_id, chatId));
+    return await this.dbOrThrow.select().from(schema.chatChunks).where(eq(schema.chatChunks.chat_id, chatId));
   }
 
   async createChatChunk(chatChunk: InsertChatChunk): Promise<ChatChunk> {
-    const results = await db.insert(schema.chatChunks).values(chatChunk).returning();
+    const results = await this.dbOrThrow.insert(schema.chatChunks).values(chatChunk).returning();
     return results[0];
   }
 
   // LLM prompt operations
   async getLlmPrompt(chatId: string): Promise<LlmPrompt | undefined> {
-    const results = await db.select().from(schema.llmPrompts).where(eq(schema.llmPrompts.chat_id, chatId));
+    const results = await this.dbOrThrow.select().from(schema.llmPrompts).where(eq(schema.llmPrompts.chat_id, chatId));
     return results[0];
   }
 
   async createLlmPrompt(prompt: InsertLlmPrompt): Promise<LlmPrompt> {
-    const results = await db.insert(schema.llmPrompts).values(prompt).returning();
+    // Ensure context_chunks is an array
+    const promptWithArrayChunks = {
+      ...prompt,
+      context_chunks: Array.isArray(prompt.context_chunks) ? prompt.context_chunks : [prompt.context_chunks]
+    };
+    const results = await this.dbOrThrow.insert(schema.llmPrompts).values(promptWithArrayChunks).returning();
     return results[0];
   }
 
   // Knowledge graph node operations
   async getNodes(bookId: string): Promise<Node[]> {
-    return await db.select().from(schema.nodes).where(eq(schema.nodes.book_id, bookId));
+    return await this.dbOrThrow.select().from(schema.nodes).where(eq(schema.nodes.book_id, bookId));
   }
 
   async getNode(id: string): Promise<Node | undefined> {
-    const results = await db.select().from(schema.nodes).where(eq(schema.nodes.id, id));
+    const results = await this.dbOrThrow.select().from(schema.nodes).where(eq(schema.nodes.id, id));
     return results[0];
   }
 
   async createNode(node: InsertNode): Promise<Node> {
-    const results = await db.insert(schema.nodes).values(node).returning();
+    const results = await this.dbOrThrow.insert(schema.nodes).values(node).returning();
     return results[0];
   }
 
   // Knowledge graph edge operations
   async getEdges(bookId: string): Promise<Edge[]> {
     // Join with nodes to get edges for a specific book
-    const results = await db.select().from(schema.edges)
+    const results = await this.dbOrThrow
+      .select({
+        edges: schema.edges
+      })
+      .from(schema.edges)
       .innerJoin(schema.nodes, eq(schema.edges.source_node_id, schema.nodes.id))
       .where(eq(schema.nodes.book_id, bookId));
     
@@ -236,22 +251,22 @@ export class PgStorage implements IStorage {
   }
 
   async getEdge(id: string): Promise<Edge | undefined> {
-    const results = await db.select().from(schema.edges).where(eq(schema.edges.id, id));
+    const results = await this.dbOrThrow.select().from(schema.edges).where(eq(schema.edges.id, id));
     return results[0];
   }
 
   async createEdge(edge: InsertEdge): Promise<Edge> {
-    const results = await db.insert(schema.edges).values(edge).returning();
+    const results = await this.dbOrThrow.insert(schema.edges).values(edge).returning();
     return results[0];
   }
 
   // Node chunk associations
   async getNodeChunks(nodeId: string): Promise<NodeChunk[]> {
-    return await db.select().from(schema.nodeChunks).where(eq(schema.nodeChunks.node_id, nodeId));
+    return await this.dbOrThrow.select().from(schema.nodeChunks).where(eq(schema.nodeChunks.node_id, nodeId));
   }
 
   async createNodeChunk(nodeChunk: InsertNodeChunk): Promise<NodeChunk> {
-    const results = await db.insert(schema.nodeChunks).values(nodeChunk).returning();
+    const results = await this.dbOrThrow.insert(schema.nodeChunks).values(nodeChunk).returning();
     return results[0];
   }
 }
