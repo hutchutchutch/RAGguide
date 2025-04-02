@@ -8,25 +8,17 @@ const __dirname = path.dirname(__filename);
 
 // Check theme.json files
 console.log("Checking theme.json files...");
-const rootThemePath = path.resolve(__dirname, './theme.json');
 const clientThemePath = path.resolve(__dirname, './client/theme.json');
 const serverThemePath = path.resolve(__dirname, './server/theme.json');
 
-console.log(`Root theme.json exists: ${fs.existsSync(rootThemePath)}`);
 console.log(`Client theme.json exists: ${fs.existsSync(clientThemePath)}`);
 console.log(`Server theme.json exists: ${fs.existsSync(serverThemePath)}`);
-
-if (fs.existsSync(rootThemePath)) {
-  console.log(`Root theme.json content: ${fs.readFileSync(rootThemePath, 'utf8')}`);
-}
 
 // Check vite.config.ts
 console.log("\nChecking Vite configuration...");
 const clientViteConfigPath = path.resolve(__dirname, './client/vite.config.ts');
-const rootViteConfigPath = path.resolve(__dirname, './vite.config.ts');
 
 console.log(`Client vite.config.ts exists: ${fs.existsSync(clientViteConfigPath)}`);
-console.log(`Root vite.config.ts exists: ${fs.existsSync(rootViteConfigPath)}`);
 
 // Check client/index.html
 console.log("\nChecking client/index.html...");
